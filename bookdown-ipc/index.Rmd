@@ -1,6 +1,6 @@
 --- 
 title: "Análisis de Series de Tiempo: Índice de Precios al Consumidor (IPC) de Colombia"
-author: "Maestría en Ciencia de Datos - Universidad Javeriana Cali"
+author: "Juan Sebastian Torres Romero - Maestría en Ciencia de Datos, Universidad Javeriana Cali"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 documentclass: book
@@ -33,7 +33,7 @@ Se trabajará con la **variación mensual del IPC total nacional** publicada por
 ## Fuentes de información
 
 - DANE - Índice de Precios al Consumidor: [https://www.dane.gov.co/index.php/estadisticas-por-tema/precios-y-costos/indice-de-precios-al-consumidor-ipc](https://www.dane.gov.co/index.php/estadisticas-por-tema/precios-y-costos/indice-de-precios-al-consumidor-ipc)
-- Banco de la República - Series estadísticas: [https://www.banrep.gov.co/es/estadisticas/indice-precios-consumidor-ipc](https://www.banrep.gov.co/es/estadisticas/indice-precios-consumidor-ipc)
+- Banco de la República - Series estadísticas: [https://uba.banrep.gov.co/htmlcommons/SeriesHistoricas/precios-inflacion.html](https://www.banrep.gov.co/es/estadisticas/indice-precios-consumidor-ipc)
 - Hyndman, R.J., & Athanasopoulos, G. (2021). *Forecasting: principles and practice*, 3rd edition, OTexts: Melbourne, Australia. [OTexts.com/fpp3](https://OTexts.com/fpp3)
 
 Los datos del IPC son de dominio público y su uso no requiere permisos especiales.
