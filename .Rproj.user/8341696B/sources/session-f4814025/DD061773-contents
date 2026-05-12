@@ -1,6 +1,6 @@
 --- 
 title: "Análisis de Series de Tiempo: Índice de Precios al Consumidor (IPC) de Colombia"
-author: "Maestría en Ciencia de Datos - Universidad Javeriana Cali"
+author: "Juan Sebastian Torres Romero - Maestría en Ciencia de Datos, Universidad Javeriana Cali"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 documentclass: book
