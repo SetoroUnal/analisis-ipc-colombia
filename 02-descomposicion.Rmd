@@ -1,0 +1,246 @@
+# Descomposición, Estacionariedad y Diferenciación
+
+## Descomposición de la serie
+
+La descomposición permite separar la serie en sus componentes fundamentales: tendencia, estacionalidad y componente residual (aleatorio). Realizamos tanto la descomposición aditiva como la multiplicativa.
+
+### Descomposición aditiva
+
+```{r decomp-aditiva, fig.width=10, fig.height=8}
+decomp_add <- decompose(ipc_ts, type = "additive")
+plot(decomp_add, xlab = "Año")
+title(main = "Descomposición Aditiva - IPC Colombia", outer = TRUE, line = -1)
+```
+
+### Descomposición multiplicativa
+
+```{r decomp-multiplicativa, fig.width=10, fig.height=8, warning=FALSE}
+# La serie tiene valores negativos, así que desplazamos para la multiplicativa
+ipc_ts_pos <- ipc_ts + abs(min(ipc_ts)) + 0.01
+decomp_mult <- decompose(ipc_ts_pos, type = "multiplicative")
+plot(decomp_mult, xlab = "Año")
+title(main = "Descomposición Multiplicativa - IPC Colombia (serie desplazada)", 
+      outer = TRUE, line = -1)
+```
+
+### Descomposición STL
+
+La descomposición STL (Seasonal and Trend decomposition using Loess) es más robusta que los métodos clásicos, ya que permite que el componente estacional varíe en el tiempo:
+
+```{r stl, fig.width=10, fig.height=8}
+stl_decomp <- stl(ipc_ts, s.window = "periodic")
+plot(stl_decomp, main = "Descomposición STL - IPC Colombia")
+```
+
+```{r stl-componentes}
+# Extraer componentes
+tendencia <- stl_decomp$time.series[, "trend"]
+estacional <- stl_decomp$time.series[, "seasonal"]
+residual <- stl_decomp$time.series[, "remainder"]
+
+cat("Resumen de la Tendencia:\n")
+summary(as.numeric(tendencia))
+
+cat("\nResumen del Componente Estacional:\n")
+summary(as.numeric(estacional))
+
+cat("\nResumen de los Residuos:\n")
+summary(as.numeric(residual))
+```
+
+**Interpretación de la descomposición:**
+
+- **Tendencia:** Se observa claramente el período de inflación baja entre 2017-2019 (tendencia cercana a 0.2%), el valle durante la pandemia de 2020, y el marcado incremento durante 2022-2023 (tendencia superior a 0.8%). Desde 2024, la tendencia muestra una normalización gradual.
+- **Estacionalidad:** El patrón estacional se confirma: picos en enero-febrero y valles en julio. La magnitud del componente estacional se mantiene relativamente estable.
+- **Residuos:** Los residuos muestran mayor variabilidad en los períodos de choques (2020 y 2022-2023), lo cual es esperable dado que estos eventos generaron desviaciones atípicas respecto al comportamiento histórico.
+
+Se elige el modelo **aditivo** como el más apropiado para esta serie, dado que la amplitud del componente estacional no parece variar proporcionalmente con el nivel de la tendencia (la estacionalidad mantiene una magnitud similar independientemente de si la inflación es alta o baja).
+
+## Pruebas de Estacionariedad
+
+Una serie es estacionaria si sus propiedades estadísticas (media, varianza, autocorrelación) no cambian con el tiempo. La estacionariedad es un requisito fundamental para la mayoría de modelos de series de tiempo.
+
+### Prueba Augmented Dickey-Fuller (ADF)
+
+La hipótesis nula de la prueba ADF es que la serie tiene raíz unitaria (no es estacionaria):
+
+```{r adf-test}
+adf_result <- adf.test(ipc_ts)
+cat("Prueba Augmented Dickey-Fuller\n")
+cat("Estadístico:", adf_result$statistic, "\n")
+cat("Valor p:", adf_result$p.value, "\n")
+cat("Rezagos usados:", adf_result$parameter, "\n")
+
+if(adf_result$p.value < 0.05) {
+  cat("\nConclusión: Se rechaza H0. La serie ES estacionaria (p < 0.05).\n")
+} else {
+  cat("\nConclusión: No se rechaza H0. La serie NO es estacionaria (p >= 0.05).\n")
+}
+```
+
+### Prueba KPSS
+
+La prueba KPSS tiene la hipótesis nula inversa: la serie es estacionaria. Esto nos da una segunda perspectiva:
+
+```{r kpss-test}
+kpss_result <- kpss.test(ipc_ts, null = "Level")
+cat("Prueba KPSS\n")
+cat("Estadístico:", kpss_result$statistic, "\n")
+cat("Valor p:", kpss_result$p.value, "\n")
+
+if(kpss_result$p.value < 0.05) {
+  cat("\nConclusión: Se rechaza H0. La serie NO es estacionaria (p < 0.05).\n")
+} else {
+  cat("\nConclusión: No se rechaza H0. La serie ES estacionaria (p >= 0.05).\n")
+}
+```
+
+### Número de diferencias requeridas
+
+La función `ndiffs()` del paquete `forecast` estima automáticamente el número de diferencias ordinarias necesarias, y `nsdiffs()` las diferencias estacionales:
+
+```{r ndiffs}
+n_diff <- ndiffs(ipc_ts)
+n_sdiff <- nsdiffs(ipc_ts)
+
+cat("Número de diferencias ordinarias sugeridas:", n_diff, "\n")
+cat("Número de diferencias estacionales sugeridas:", n_sdiff, "\n")
+```
+
+## Diferenciación
+
+Aplicamos la diferenciación según lo sugerido por las pruebas anteriores, para hacer la serie estacionaria.
+
+### Diferenciación ordinaria (d = 1)
+
+```{r diff-ordinaria, fig.width=10, fig.height=5}
+ipc_diff <- diff(ipc_ts, differences = 1)
+
+autoplot(ipc_diff) +
+  ggtitle("Serie Diferenciada (d = 1) - IPC Colombia") +
+  xlab("Año") +
+  ylab("Diferencia de la variación mensual") +
+  theme_minimal() +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", alpha = 0.5)
+```
+
+### Verificación de estacionariedad de la serie diferenciada
+
+```{r adf-diff}
+adf_diff <- adf.test(ipc_diff)
+cat("Prueba ADF sobre la serie diferenciada:\n")
+cat("Estadístico:", adf_diff$statistic, "\n")
+cat("Valor p:", adf_diff$p.value, "\n")
+
+if(adf_diff$p.value < 0.05) {
+  cat("Conclusión: La serie diferenciada ES estacionaria.\n")
+} else {
+  cat("Conclusión: La serie diferenciada NO es estacionaria, se requiere más diferenciación.\n")
+}
+```
+
+```{r kpss-diff}
+kpss_diff <- kpss.test(ipc_diff, null = "Level")
+cat("\nPrueba KPSS sobre la serie diferenciada:\n")
+cat("Estadístico:", kpss_diff$statistic, "\n")
+cat("Valor p:", kpss_diff$p.value, "\n")
+
+if(kpss_diff$p.value < 0.05) {
+  cat("Conclusión (KPSS): La serie diferenciada NO es estacionaria.\n")
+} else {
+  cat("Conclusión (KPSS): La serie diferenciada ES estacionaria.\n")
+}
+```
+
+### Diferenciación estacional (D = 1, lag = 12)
+
+```{r diff-estacional, fig.width=10, fig.height=5}
+ipc_sdiff <- diff(ipc_ts, lag = 12, differences = 1)
+
+autoplot(ipc_sdiff) +
+  ggtitle("Serie con Diferenciación Estacional (D = 1, lag = 12) - IPC Colombia") +
+  xlab("Año") +
+  ylab("Diferencia estacional") +
+  theme_minimal() +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", alpha = 0.5)
+```
+
+```{r adf-sdiff}
+adf_sdiff <- adf.test(ipc_sdiff)
+cat("Prueba ADF sobre la serie con diferenciación estacional:\n")
+cat("Estadístico:", adf_sdiff$statistic, "\n")
+cat("Valor p:", adf_sdiff$p.value, "\n")
+```
+
+### ACF y PACF de la serie diferenciada
+
+```{r acf-diff, fig.width=10, fig.height=8}
+par(mfrow = c(2, 1))
+acf(ipc_diff, lag.max = 48, main = "ACF - Serie Diferenciada")
+pacf(ipc_diff, lag.max = 48, main = "PACF - Serie Diferenciada")
+par(mfrow = c(1, 1))
+```
+
+## Transformaciones
+
+### Evaluación de la necesidad de transformación
+
+Para determinar si es necesaria una transformación (como la de Box-Cox) para estabilizar la varianza, examinamos la relación entre el nivel y la dispersión de la serie:
+
+```{r boxcox, fig.width=10, fig.height=5, warning=FALSE}
+# Como la serie tiene valores negativos, evaluamos si una transformación es viable
+cat("Rango de la serie:", range(ipc_ts), "\n")
+cat("La serie contiene valores negativos:", any(ipc_ts < 0), "\n")
+cat("\nDado que la variación mensual del IPC incluye valores negativos (meses con",
+    "deflación), la transformación Box-Cox clásica no es directamente aplicable.\n")
+```
+
+```{r varianza-rolling, fig.width=10, fig.height=5}
+# Varianza móvil para evaluar heterocedasticidad
+library(zoo)
+var_movil <- rollapply(ipc_ts, width = 12, FUN = var, fill = NA, align = "center")
+
+autoplot(ts(var_movil, start = c(2010, 1), frequency = 12)) +
+  ggtitle("Varianza Móvil (ventana 12 meses) - IPC Colombia") +
+  xlab("Año") +
+  ylab("Varianza") +
+  theme_minimal()
+```
+
+**Justificación sobre transformaciones:**
+
+La varianza móvil muestra que la dispersión de la serie **no es constante** a lo largo del tiempo: es relativamente baja entre 2017-2019, se incrementa en 2020 por la pandemia, y alcanza sus valores máximos en 2022-2023 durante el choque inflacionario. Sin embargo, decidimos **no aplicar una transformación Box-Cox** por las siguientes razones:
+
+1. **Valores negativos:** La serie contiene meses con deflación (variaciones negativas), lo cual impide aplicar la transformación logarítmica o Box-Cox directamente sin un desplazamiento artificial.
+2. **La diferenciación es suficiente:** Las pruebas de estacionariedad muestran que con una diferenciación ordinaria (y eventualmente estacional), la serie se vuelve estacionaria en media.
+3. **Interpretabilidad:** Mantener la serie sin transformar preserva la interpretación directa en puntos porcentuales.
+
+## Resumen del preprocesamiento
+
+```{r resumen-final, fig.width=10, fig.height=10}
+par(mfrow = c(3, 1), mar = c(4, 4, 3, 1))
+
+plot(ipc_ts, main = "Serie Original - IPC Colombia", 
+     ylab = "Variación (%)", xlab = "Año", col = "darkblue")
+abline(h = 0, lty = 2, col = "red")
+
+plot(ipc_diff, main = "Serie Diferenciada (d=1)", 
+     ylab = "Diferencia", xlab = "Año", col = "darkgreen")
+abline(h = 0, lty = 2, col = "red")
+
+plot(ipc_sdiff, main = "Serie con Diferenciación Estacional (D=1, s=12)", 
+     ylab = "Dif. estacional", xlab = "Año", col = "purple")
+abline(h = 0, lty = 2, col = "red")
+
+par(mfrow = c(1, 1))
+```
+
+**Conclusiones del preprocesamiento:**
+
+1. La serie original del IPC mensual de Colombia presenta **tendencia, estacionalidad y varianza no constante**, lo que confirma que no es estacionaria en su forma original.
+2. La **descomposición STL** permite visualizar claramente estos tres componentes y confirma que el modelo aditivo es apropiado.
+3. Las **pruebas ADF y KPSS** confirman la no estacionariedad de la serie original y la efectividad de la diferenciación para alcanzar estacionariedad.
+4. Se recomienda una **diferenciación ordinaria (d=1)** y posiblemente una **diferenciación estacional (D=1)** para su uso en modelos SARIMA futuros.
+5. **No se aplica transformación Box-Cox** debido a la presencia de valores negativos y porque la diferenciación resulta suficiente para estabilizar la serie.
+
+Estos resultados sientan las bases para la etapa de modelado (Módulo 2), donde se seleccionará el modelo SARIMA más adecuado con base en los patrones identificados en el ACF y PACF de la serie diferenciada.
