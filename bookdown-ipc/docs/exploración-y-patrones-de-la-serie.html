@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Capítulo 1 Exploración y Patrones de la Serie | Análisis de Series de Tiempo: Índice de Precios al Consumidor (IPC) de Colombia</title>
+  <meta name="description" content="Análisis del comportamiento del IPC en Colombia mediante técnicas de series de tiempo." />
+  <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Capítulo 1 Exploración y Patrones de la Serie | Análisis de Series de Tiempo: Índice de Precios al Consumidor (IPC) de Colombia" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Análisis del comportamiento del IPC en Colombia mediante técnicas de series de tiempo." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Capítulo 1 Exploración y Patrones de la Serie | Análisis de Series de Tiempo: Índice de Precios al Consumidor (IPC) de Colombia" />
+  
+  <meta name="twitter:description" content="Análisis del comportamiento del IPC en Colombia mediante técnicas de series de tiempo." />
+  
+
+<meta name="author" content="Maestría en Ciencia de Datos - Universidad Javeriana Cali" />
+
+
+<meta name="date" content="2026-05-11" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+<link rel="next" href="descomposición-estacionariedad-y-diferenciación.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Análisis de Series de Tiempo: IPC Colombia</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Propuesta</a>
+<ul>
+<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#justificación"><i class="fa fa-check"></i><b>0.1</b> Justificación</a></li>
+<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#datos-seleccionados"><i class="fa fa-check"></i><b>0.2</b> Datos seleccionados</a></li>
+<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#fuentes-de-información"><i class="fa fa-check"></i><b>0.3</b> Fuentes de información</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html"><i class="fa fa-check"></i><b>1</b> Exploración y Patrones de la Serie</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html#carga-de-librerías-y-datos"><i class="fa fa-check"></i><b>1.1</b> Carga de librerías y datos</a></li>
+<li class="chapter" data-level="1.2" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html#conversión-a-objeto-de-serie-de-tiempo"><i class="fa fa-check"></i><b>1.2</b> Conversión a objeto de serie de tiempo</a></li>
+<li class="chapter" data-level="1.3" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html#visualización-inicial-de-la-serie"><i class="fa fa-check"></i><b>1.3</b> Visualización inicial de la serie</a></li>
+<li class="chapter" data-level="1.4" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html#estadísticas-descriptivas"><i class="fa fa-check"></i><b>1.4</b> Estadísticas descriptivas</a></li>
+<li class="chapter" data-level="1.5" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html#promedio-móvil"><i class="fa fa-check"></i><b>1.5</b> Promedio Móvil</a></li>
+<li class="chapter" data-level="1.6" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html#análisis-de-rezagos-autocorrelación"><i class="fa fa-check"></i><b>1.6</b> Análisis de Rezagos (Autocorrelación)</a></li>
+<li class="chapter" data-level="1.7" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html#gráfico-de-rezagos"><i class="fa fa-check"></i><b>1.7</b> Gráfico de Rezagos</a></li>
+<li class="chapter" data-level="1.8" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html#análisis-de-estacionalidad"><i class="fa fa-check"></i><b>1.8</b> Análisis de Estacionalidad</a>
+<ul>
+<li class="chapter" data-level="1.8.1" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html#gráfico-estacional"><i class="fa fa-check"></i><b>1.8.1</b> Gráfico estacional</a></li>
+<li class="chapter" data-level="1.8.2" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html#gráfico-de-subseries-estacionales"><i class="fa fa-check"></i><b>1.8.2</b> Gráfico de subseries estacionales</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html"><i class="fa fa-check"></i><b>2</b> Descomposición, Estacionariedad y Diferenciación</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#descomposición-de-la-serie"><i class="fa fa-check"></i><b>2.1</b> Descomposición de la serie</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#descomposición-aditiva"><i class="fa fa-check"></i><b>2.1.1</b> Descomposición aditiva</a></li>
+<li class="chapter" data-level="2.1.2" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#descomposición-multiplicativa"><i class="fa fa-check"></i><b>2.1.2</b> Descomposición multiplicativa</a></li>
+<li class="chapter" data-level="2.1.3" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#descomposición-stl"><i class="fa fa-check"></i><b>2.1.3</b> Descomposición STL</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#pruebas-de-estacionariedad"><i class="fa fa-check"></i><b>2.2</b> Pruebas de Estacionariedad</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#prueba-augmented-dickey-fuller-adf"><i class="fa fa-check"></i><b>2.2.1</b> Prueba Augmented Dickey-Fuller (ADF)</a></li>
+<li class="chapter" data-level="2.2.2" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#prueba-kpss"><i class="fa fa-check"></i><b>2.2.2</b> Prueba KPSS</a></li>
+<li class="chapter" data-level="2.2.3" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#número-de-diferencias-requeridas"><i class="fa fa-check"></i><b>2.2.3</b> Número de diferencias requeridas</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#diferenciación"><i class="fa fa-check"></i><b>2.3</b> Diferenciación</a>
+<ul>
+<li class="chapter" data-level="2.3.1" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#diferenciación-ordinaria-d-1"><i class="fa fa-check"></i><b>2.3.1</b> Diferenciación ordinaria (d = 1)</a></li>
+<li class="chapter" data-level="2.3.2" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#verificación-de-estacionariedad-de-la-serie-diferenciada"><i class="fa fa-check"></i><b>2.3.2</b> Verificación de estacionariedad de la serie diferenciada</a></li>
+<li class="chapter" data-level="2.3.3" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#diferenciación-estacional-d-1-lag-12"><i class="fa fa-check"></i><b>2.3.3</b> Diferenciación estacional (D = 1, lag = 12)</a></li>
+<li class="chapter" data-level="2.3.4" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#acf-y-pacf-de-la-serie-diferenciada"><i class="fa fa-check"></i><b>2.3.4</b> ACF y PACF de la serie diferenciada</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#transformaciones"><i class="fa fa-check"></i><b>2.4</b> Transformaciones</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#evaluación-de-la-necesidad-de-transformación"><i class="fa fa-check"></i><b>2.4.1</b> Evaluación de la necesidad de transformación</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#resumen-del-preprocesamiento"><i class="fa fa-check"></i><b>2.5</b> Resumen del preprocesamiento</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Publicado con bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Análisis de Series de Tiempo: Índice de Precios al Consumidor (IPC) de Colombia</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="exploración-y-patrones-de-la-serie" class="section level1 hasAnchor" number="1">
+<h1><span class="header-section-number">Capítulo 1</span> Exploración y Patrones de la Serie<a href="exploración-y-patrones-de-la-serie.html#exploración-y-patrones-de-la-serie" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="carga-de-librerías-y-datos" class="section level2 hasAnchor" number="1.1">
+<h2><span class="header-section-number">1.1</span> Carga de librerías y datos<a href="exploración-y-patrones-de-la-serie.html#carga-de-librerías-y-datos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="exploración-y-patrones-de-la-serie.html#cb1-1" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb1-2"><a href="exploración-y-patrones-de-la-serie.html#cb1-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-3"><a href="exploración-y-patrones-de-la-serie.html#cb1-3" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-4"><a href="exploración-y-patrones-de-la-serie.html#cb1-4" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
+<span id="cb1-5"><a href="exploración-y-patrones-de-la-serie.html#cb1-5" tabindex="-1"></a><span class="fu">library</span>(zoo)</span>
+<span id="cb1-6"><a href="exploración-y-patrones-de-la-serie.html#cb1-6" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb1-7"><a href="exploración-y-patrones-de-la-serie.html#cb1-7" tabindex="-1"></a><span class="fu">library</span>(tseries)</span></code></pre></div>
+<p>Para este análisis, se construyó un conjunto de datos con la variación mensual del IPC total nacional de Colombia, desde enero de 2010 hasta diciembre de 2025. Los datos fueron recopilados del DANE.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="exploración-y-patrones-de-la-serie.html#cb2-1" tabindex="-1"></a><span class="co"># Datos del IPC - Variación mensual (%) Colombia</span></span>
+<span id="cb2-2"><a href="exploración-y-patrones-de-la-serie.html#cb2-2" tabindex="-1"></a><span class="co"># Fuente: DANE - Índice de Precios al Consumidor</span></span>
+<span id="cb2-3"><a href="exploración-y-patrones-de-la-serie.html#cb2-3" tabindex="-1"></a>ipc_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb2-4"><a href="exploración-y-patrones-de-la-serie.html#cb2-4" tabindex="-1"></a>  <span class="at">fecha =</span> <span class="fu">seq</span>(<span class="fu">as.Date</span>(<span class="st">&quot;2010-01-01&quot;</span>), <span class="fu">as.Date</span>(<span class="st">&quot;2025-12-01&quot;</span>), <span class="at">by =</span> <span class="st">&quot;month&quot;</span>),</span>
+<span id="cb2-5"><a href="exploración-y-patrones-de-la-serie.html#cb2-5" tabindex="-1"></a>  <span class="at">variacion =</span> <span class="fu">c</span>(</span>
+<span id="cb2-6"><a href="exploración-y-patrones-de-la-serie.html#cb2-6" tabindex="-1"></a>    <span class="co"># 2010</span></span>
+<span id="cb2-7"><a href="exploración-y-patrones-de-la-serie.html#cb2-7" tabindex="-1"></a>    <span class="fl">0.69</span>, <span class="fl">0.83</span>, <span class="fl">0.25</span>, <span class="fl">0.46</span>, <span class="fl">0.10</span>, <span class="fl">0.11</span>, <span class="sc">-</span><span class="fl">0.04</span>, <span class="fl">0.11</span>, <span class="sc">-</span><span class="fl">0.14</span>, <span class="sc">-</span><span class="fl">0.09</span>, <span class="fl">0.19</span>, <span class="fl">0.65</span>,</span>
+<span id="cb2-8"><a href="exploración-y-patrones-de-la-serie.html#cb2-8" tabindex="-1"></a>    <span class="co"># 2011</span></span>
+<span id="cb2-9"><a href="exploración-y-patrones-de-la-serie.html#cb2-9" tabindex="-1"></a>    <span class="fl">0.91</span>, <span class="fl">0.60</span>, <span class="fl">0.27</span>, <span class="fl">0.12</span>, <span class="fl">0.28</span>, <span class="fl">0.32</span>, <span class="fl">0.14</span>, <span class="fl">0.03</span>, <span class="fl">0.31</span>, <span class="fl">0.19</span>, <span class="fl">0.14</span>, <span class="fl">0.42</span>,</span>
+<span id="cb2-10"><a href="exploración-y-patrones-de-la-serie.html#cb2-10" tabindex="-1"></a>    <span class="co"># 2012</span></span>
+<span id="cb2-11"><a href="exploración-y-patrones-de-la-serie.html#cb2-11" tabindex="-1"></a>    <span class="fl">0.73</span>, <span class="fl">0.61</span>, <span class="fl">0.12</span>, <span class="fl">0.14</span>, <span class="fl">0.30</span>, <span class="fl">0.08</span>, <span class="sc">-</span><span class="fl">0.02</span>, <span class="fl">0.04</span>, <span class="fl">0.29</span>, <span class="fl">0.16</span>, <span class="sc">-</span><span class="fl">0.14</span>, <span class="fl">0.09</span>,</span>
+<span id="cb2-12"><a href="exploración-y-patrones-de-la-serie.html#cb2-12" tabindex="-1"></a>    <span class="co"># 2013</span></span>
+<span id="cb2-13"><a href="exploración-y-patrones-de-la-serie.html#cb2-13" tabindex="-1"></a>    <span class="fl">0.30</span>, <span class="fl">0.44</span>, <span class="fl">0.21</span>, <span class="fl">0.25</span>, <span class="fl">0.28</span>, <span class="fl">0.23</span>, <span class="sc">-</span><span class="fl">0.13</span>, <span class="fl">0.04</span>, <span class="fl">0.29</span>, <span class="sc">-</span><span class="fl">0.26</span>, <span class="sc">-</span><span class="fl">0.22</span>, <span class="fl">0.26</span>,</span>
+<span id="cb2-14"><a href="exploración-y-patrones-de-la-serie.html#cb2-14" tabindex="-1"></a>    <span class="co"># 2014</span></span>
+<span id="cb2-15"><a href="exploración-y-patrones-de-la-serie.html#cb2-15" tabindex="-1"></a>    <span class="fl">0.49</span>, <span class="fl">0.63</span>, <span class="fl">0.39</span>, <span class="fl">0.46</span>, <span class="fl">0.48</span>, <span class="fl">0.09</span>, <span class="fl">0.15</span>, <span class="fl">0.20</span>, <span class="fl">0.14</span>, <span class="fl">0.16</span>, <span class="fl">0.13</span>, <span class="fl">0.27</span>,</span>
+<span id="cb2-16"><a href="exploración-y-patrones-de-la-serie.html#cb2-16" tabindex="-1"></a>    <span class="co"># 2015</span></span>
+<span id="cb2-17"><a href="exploración-y-patrones-de-la-serie.html#cb2-17" tabindex="-1"></a>    <span class="fl">0.64</span>, <span class="fl">1.15</span>, <span class="fl">0.59</span>, <span class="fl">0.54</span>, <span class="fl">0.26</span>, <span class="fl">0.10</span>, <span class="fl">0.19</span>, <span class="fl">0.48</span>, <span class="fl">0.72</span>, <span class="fl">0.68</span>, <span class="fl">0.60</span>, <span class="fl">0.62</span>,</span>
+<span id="cb2-18"><a href="exploración-y-patrones-de-la-serie.html#cb2-18" tabindex="-1"></a>    <span class="co"># 2016</span></span>
+<span id="cb2-19"><a href="exploración-y-patrones-de-la-serie.html#cb2-19" tabindex="-1"></a>    <span class="fl">1.29</span>, <span class="fl">1.28</span>, <span class="fl">0.94</span>, <span class="fl">0.50</span>, <span class="fl">0.51</span>, <span class="fl">0.48</span>, <span class="fl">0.52</span>, <span class="sc">-</span><span class="fl">0.12</span>, <span class="fl">0.17</span>, <span class="sc">-</span><span class="fl">0.06</span>, <span class="fl">0.11</span>, <span class="fl">0.42</span>,</span>
+<span id="cb2-20"><a href="exploración-y-patrones-de-la-serie.html#cb2-20" tabindex="-1"></a>    <span class="co"># 2017</span></span>
+<span id="cb2-21"><a href="exploración-y-patrones-de-la-serie.html#cb2-21" tabindex="-1"></a>    <span class="fl">1.02</span>, <span class="fl">1.01</span>, <span class="fl">0.47</span>, <span class="fl">0.47</span>, <span class="fl">0.23</span>, <span class="fl">0.11</span>, <span class="sc">-</span><span class="fl">0.05</span>, <span class="fl">0.14</span>, <span class="fl">0.04</span>, <span class="fl">0.02</span>, <span class="fl">0.18</span>, <span class="fl">0.38</span>,</span>
+<span id="cb2-22"><a href="exploración-y-patrones-de-la-serie.html#cb2-22" tabindex="-1"></a>    <span class="co"># 2018</span></span>
+<span id="cb2-23"><a href="exploración-y-patrones-de-la-serie.html#cb2-23" tabindex="-1"></a>    <span class="fl">0.63</span>, <span class="fl">0.71</span>, <span class="fl">0.24</span>, <span class="fl">0.46</span>, <span class="fl">0.25</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span>, <span class="fl">0.12</span>, <span class="fl">0.18</span>, <span class="fl">0.16</span>, <span class="fl">0.10</span>, <span class="fl">0.30</span>,</span>
+<span id="cb2-24"><a href="exploración-y-patrones-de-la-serie.html#cb2-24" tabindex="-1"></a>    <span class="co"># 2019</span></span>
+<span id="cb2-25"><a href="exploración-y-patrones-de-la-serie.html#cb2-25" tabindex="-1"></a>    <span class="fl">0.60</span>, <span class="fl">0.55</span>, <span class="fl">0.43</span>, <span class="fl">0.50</span>, <span class="fl">0.31</span>, <span class="fl">0.12</span>, <span class="fl">0.04</span>, <span class="fl">0.05</span>, <span class="fl">0.17</span>, <span class="fl">0.16</span>, <span class="fl">0.12</span>, <span class="fl">0.26</span>,</span>
+<span id="cb2-26"><a href="exploración-y-patrones-de-la-serie.html#cb2-26" tabindex="-1"></a>    <span class="co"># 2020</span></span>
+<span id="cb2-27"><a href="exploración-y-patrones-de-la-serie.html#cb2-27" tabindex="-1"></a>    <span class="fl">0.42</span>, <span class="fl">0.67</span>, <span class="fl">0.57</span>, <span class="fl">0.16</span>, <span class="sc">-</span><span class="fl">0.32</span>, <span class="sc">-</span><span class="fl">0.38</span>, <span class="fl">0.00</span>, <span class="sc">-</span><span class="fl">0.01</span>, <span class="fl">0.06</span>, <span class="sc">-</span><span class="fl">0.06</span>, <span class="sc">-</span><span class="fl">0.15</span>, <span class="fl">0.38</span>,</span>
+<span id="cb2-28"><a href="exploración-y-patrones-de-la-serie.html#cb2-28" tabindex="-1"></a>    <span class="co"># 2021</span></span>
+<span id="cb2-29"><a href="exploración-y-patrones-de-la-serie.html#cb2-29" tabindex="-1"></a>    <span class="fl">0.41</span>, <span class="fl">0.64</span>, <span class="fl">0.51</span>, <span class="fl">0.59</span>, <span class="fl">0.43</span>, <span class="fl">0.32</span>, <span class="fl">0.05</span>, <span class="fl">0.32</span>, <span class="fl">0.38</span>, <span class="fl">0.01</span>, <span class="fl">0.50</span>, <span class="fl">0.73</span>,</span>
+<span id="cb2-30"><a href="exploración-y-patrones-de-la-serie.html#cb2-30" tabindex="-1"></a>    <span class="co"># 2022</span></span>
+<span id="cb2-31"><a href="exploración-y-patrones-de-la-serie.html#cb2-31" tabindex="-1"></a>    <span class="fl">1.67</span>, <span class="fl">1.63</span>, <span class="fl">1.00</span>, <span class="fl">0.70</span>, <span class="fl">0.84</span>, <span class="fl">0.43</span>, <span class="fl">0.81</span>, <span class="fl">1.02</span>, <span class="fl">0.93</span>, <span class="fl">0.72</span>, <span class="fl">0.77</span>, <span class="fl">1.26</span>,</span>
+<span id="cb2-32"><a href="exploración-y-patrones-de-la-serie.html#cb2-32" tabindex="-1"></a>    <span class="co"># 2023</span></span>
+<span id="cb2-33"><a href="exploración-y-patrones-de-la-serie.html#cb2-33" tabindex="-1"></a>    <span class="fl">1.78</span>, <span class="fl">1.66</span>, <span class="fl">1.05</span>, <span class="fl">0.78</span>, <span class="fl">0.34</span>, <span class="fl">0.30</span>, <span class="sc">-</span><span class="fl">0.10</span>, <span class="fl">0.70</span>, <span class="fl">0.54</span>, <span class="fl">0.25</span>, <span class="fl">0.28</span>, <span class="fl">0.45</span>,</span>
+<span id="cb2-34"><a href="exploración-y-patrones-de-la-serie.html#cb2-34" tabindex="-1"></a>    <span class="co"># 2024</span></span>
+<span id="cb2-35"><a href="exploración-y-patrones-de-la-serie.html#cb2-35" tabindex="-1"></a>    <span class="fl">0.92</span>, <span class="fl">1.19</span>, <span class="fl">0.70</span>, <span class="fl">0.50</span>, <span class="fl">0.38</span>, <span class="fl">0.18</span>, <span class="fl">0.02</span>, <span class="fl">0.11</span>, <span class="fl">0.24</span>, <span class="fl">0.16</span>, <span class="sc">-</span><span class="fl">0.10</span>, <span class="fl">0.35</span>,</span>
+<span id="cb2-36"><a href="exploración-y-patrones-de-la-serie.html#cb2-36" tabindex="-1"></a>    <span class="co"># 2025</span></span>
+<span id="cb2-37"><a href="exploración-y-patrones-de-la-serie.html#cb2-37" tabindex="-1"></a>    <span class="fl">0.78</span>, <span class="fl">0.85</span>, <span class="fl">0.42</span>, <span class="fl">0.45</span>, <span class="fl">0.22</span>, <span class="fl">0.12</span>, <span class="sc">-</span><span class="fl">0.05</span>, <span class="fl">0.08</span>, <span class="fl">0.20</span>, <span class="fl">0.14</span>, <span class="fl">0.05</span>, <span class="fl">0.30</span></span>
+<span id="cb2-38"><a href="exploración-y-patrones-de-la-serie.html#cb2-38" tabindex="-1"></a>  )</span>
+<span id="cb2-39"><a href="exploración-y-patrones-de-la-serie.html#cb2-39" tabindex="-1"></a>)</span>
+<span id="cb2-40"><a href="exploración-y-patrones-de-la-serie.html#cb2-40" tabindex="-1"></a></span>
+<span id="cb2-41"><a href="exploración-y-patrones-de-la-serie.html#cb2-41" tabindex="-1"></a><span class="co"># Verificar estructura</span></span>
+<span id="cb2-42"><a href="exploración-y-patrones-de-la-serie.html#cb2-42" tabindex="-1"></a><span class="fu">str</span>(ipc_data)</span></code></pre></div>
+<pre><code>## &#39;data.frame&#39;:    192 obs. of  2 variables:
+##  $ fecha    : Date, format: &quot;2010-01-01&quot; &quot;2010-02-01&quot; &quot;2010-03-01&quot; &quot;2010-04-01&quot; ...
+##  $ variacion: num  0.69 0.83 0.25 0.46 0.1 0.11 -0.04 0.11 -0.14 -0.09 ...</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="exploración-y-patrones-de-la-serie.html#cb4-1" tabindex="-1"></a><span class="fu">head</span>(ipc_data, <span class="dv">12</span>)</span></code></pre></div>
+<pre><code>##         fecha variacion
+## 1  2010-01-01      0.69
+## 2  2010-02-01      0.83
+## 3  2010-03-01      0.25
+## 4  2010-04-01      0.46
+## 5  2010-05-01      0.10
+## 6  2010-06-01      0.11
+## 7  2010-07-01     -0.04
+## 8  2010-08-01      0.11
+## 9  2010-09-01     -0.14
+## 10 2010-10-01     -0.09
+## 11 2010-11-01      0.19
+## 12 2010-12-01      0.65</code></pre>
+</div>
+<div id="conversión-a-objeto-de-serie-de-tiempo" class="section level2 hasAnchor" number="1.2">
+<h2><span class="header-section-number">1.2</span> Conversión a objeto de serie de tiempo<a href="exploración-y-patrones-de-la-serie.html#conversión-a-objeto-de-serie-de-tiempo" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Convertimos los datos a un objeto <code>ts</code> con frecuencia mensual (12 observaciones por año):</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="exploración-y-patrones-de-la-serie.html#cb6-1" tabindex="-1"></a>ipc_ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(ipc_data<span class="sc">$</span>variacion, <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">2010</span>, <span class="dv">1</span>), <span class="at">frequency =</span> <span class="dv">12</span>)</span>
+<span id="cb6-2"><a href="exploración-y-patrones-de-la-serie.html#cb6-2" tabindex="-1"></a><span class="fu">class</span>(ipc_ts)</span></code></pre></div>
+<pre><code>## [1] &quot;ts&quot;</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="exploración-y-patrones-de-la-serie.html#cb8-1" tabindex="-1"></a><span class="fu">frequency</span>(ipc_ts)</span></code></pre></div>
+<pre><code>## [1] 12</code></pre>
+</div>
+<div id="visualización-inicial-de-la-serie" class="section level2 hasAnchor" number="1.3">
+<h2><span class="header-section-number">1.3</span> Visualización inicial de la serie<a href="exploración-y-patrones-de-la-serie.html#visualización-inicial-de-la-serie" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="exploración-y-patrones-de-la-serie.html#cb10-1" tabindex="-1"></a><span class="fu">autoplot</span>(ipc_ts) <span class="sc">+</span></span>
+<span id="cb10-2"><a href="exploración-y-patrones-de-la-serie.html#cb10-2" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Variación Mensual del IPC - Colombia (2010-2025)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb10-3"><a href="exploración-y-patrones-de-la-serie.html#cb10-3" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Año&quot;</span>) <span class="sc">+</span></span>
+<span id="cb10-4"><a href="exploración-y-patrones-de-la-serie.html#cb10-4" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Variación mensual (%)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb10-5"><a href="exploración-y-patrones-de-la-serie.html#cb10-5" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb10-6"><a href="exploración-y-patrones-de-la-serie.html#cb10-6" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>)</span></code></pre></div>
+<p><img src="analisis-ipc-colombia_files/figure-html/grafica-serie-1.png" width="960" /></p>
+<p>En la gráfica se observan varios elementos relevantes:</p>
+<ul>
+<li>Una <strong>estacionalidad marcada</strong>: enero suele registrar las variaciones más altas del año, mientras que meses como julio y septiembre tienden a tener variaciones bajas o incluso negativas.</li>
+<li>Un <strong>período de baja inflación</strong> entre 2017 y 2019.</li>
+<li>Un <strong>choque deflacionario</strong> durante 2020 asociado a la pandemia COVID-19, con variaciones negativas en mayo y junio.</li>
+<li>Un <strong>choque inflacionario severo</strong> entre 2022 y 2023, con variaciones mensuales que superaron el 1.5%.</li>
+</ul>
+</div>
+<div id="estadísticas-descriptivas" class="section level2 hasAnchor" number="1.4">
+<h2><span class="header-section-number">1.4</span> Estadísticas descriptivas<a href="exploración-y-patrones-de-la-serie.html#estadísticas-descriptivas" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="exploración-y-patrones-de-la-serie.html#cb11-1" tabindex="-1"></a><span class="fu">summary</span>(ipc_ts)</span></code></pre></div>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## -0.3800  0.1200  0.2950  0.3754  0.5750  1.7800</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="exploración-y-patrones-de-la-serie.html#cb13-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Desviación estándar:&quot;</span>, <span class="fu">sd</span>(ipc_ts), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Desviación estándar: 0.3749944</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="exploración-y-patrones-de-la-serie.html#cb15-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Número de observaciones:&quot;</span>, <span class="fu">length</span>(ipc_ts), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Número de observaciones: 192</code></pre>
+</div>
+<div id="promedio-móvil" class="section level2 hasAnchor" number="1.5">
+<h2><span class="header-section-number">1.5</span> Promedio Móvil<a href="exploración-y-patrones-de-la-serie.html#promedio-móvil" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>El promedio móvil permite suavizar la serie eliminando fluctuaciones de corto plazo y revelando la tendencia subyacente. Utilizamos ventanas de 3, 6 y 12 meses:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="exploración-y-patrones-de-la-serie.html#cb17-1" tabindex="-1"></a><span class="co"># Calcular promedios móviles</span></span>
+<span id="cb17-2"><a href="exploración-y-patrones-de-la-serie.html#cb17-2" tabindex="-1"></a>ipc_ma3 <span class="ot">&lt;-</span> <span class="fu">ma</span>(ipc_ts, <span class="at">order =</span> <span class="dv">3</span>)</span>
+<span id="cb17-3"><a href="exploración-y-patrones-de-la-serie.html#cb17-3" tabindex="-1"></a>ipc_ma6 <span class="ot">&lt;-</span> <span class="fu">ma</span>(ipc_ts, <span class="at">order =</span> <span class="dv">6</span>)</span>
+<span id="cb17-4"><a href="exploración-y-patrones-de-la-serie.html#cb17-4" tabindex="-1"></a>ipc_ma12 <span class="ot">&lt;-</span> <span class="fu">ma</span>(ipc_ts, <span class="at">order =</span> <span class="dv">12</span>)</span>
+<span id="cb17-5"><a href="exploración-y-patrones-de-la-serie.html#cb17-5" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="exploración-y-patrones-de-la-serie.html#cb17-6" tabindex="-1"></a><span class="co"># Gráfica comparativa</span></span>
+<span id="cb17-7"><a href="exploración-y-patrones-de-la-serie.html#cb17-7" tabindex="-1"></a><span class="fu">autoplot</span>(ipc_ts, <span class="at">series =</span> <span class="st">&quot;Original&quot;</span>) <span class="sc">+</span></span>
+<span id="cb17-8"><a href="exploración-y-patrones-de-la-serie.html#cb17-8" tabindex="-1"></a>  <span class="fu">autolayer</span>(ipc_ma3, <span class="at">series =</span> <span class="st">&quot;MA(3)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb17-9"><a href="exploración-y-patrones-de-la-serie.html#cb17-9" tabindex="-1"></a>  <span class="fu">autolayer</span>(ipc_ma6, <span class="at">series =</span> <span class="st">&quot;MA(6)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb17-10"><a href="exploración-y-patrones-de-la-serie.html#cb17-10" tabindex="-1"></a>  <span class="fu">autolayer</span>(ipc_ma12, <span class="at">series =</span> <span class="st">&quot;MA(12)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb17-11"><a href="exploración-y-patrones-de-la-serie.html#cb17-11" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;IPC Colombia: Serie Original vs Promedios Móviles&quot;</span>) <span class="sc">+</span></span>
+<span id="cb17-12"><a href="exploración-y-patrones-de-la-serie.html#cb17-12" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Año&quot;</span>) <span class="sc">+</span></span>
+<span id="cb17-13"><a href="exploración-y-patrones-de-la-serie.html#cb17-13" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Variación mensual (%)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb17-14"><a href="exploración-y-patrones-de-la-serie.html#cb17-14" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Original&quot;</span> <span class="ot">=</span> <span class="st">&quot;gray70&quot;</span>, <span class="st">&quot;MA(3)&quot;</span> <span class="ot">=</span> <span class="st">&quot;blue&quot;</span>, </span>
+<span id="cb17-15"><a href="exploración-y-patrones-de-la-serie.html#cb17-15" tabindex="-1"></a>                                 <span class="st">&quot;MA(6)&quot;</span> <span class="ot">=</span> <span class="st">&quot;darkgreen&quot;</span>, <span class="st">&quot;MA(12)&quot;</span> <span class="ot">=</span> <span class="st">&quot;red&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb17-16"><a href="exploración-y-patrones-de-la-serie.html#cb17-16" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<pre><code>## Warning: Removed 2 rows containing missing values or values outside the scale range (`geom_line()`).</code></pre>
+<pre><code>## Warning: Removed 6 rows containing missing values or values outside the scale range (`geom_line()`).</code></pre>
+<pre><code>## Warning: Removed 12 rows containing missing values or values outside the scale range (`geom_line()`).</code></pre>
+<p><img src="analisis-ipc-colombia_files/figure-html/promedio-movil-1.png" width="960" /></p>
+<p>Se observa que:</p>
+<ul>
+<li>El <strong>MA(3)</strong> suaviza ligeramente la serie, conservando aún la estacionalidad.</li>
+<li>El <strong>MA(6)</strong> reduce notablemente las fluctuaciones estacionales.</li>
+<li>El <strong>MA(12)</strong> elimina casi por completo la estacionalidad y revela la tendencia de largo plazo: períodos de inflación baja (2017-2019), el choque pandémico (2020) y el pico inflacionario (2022-2023).</li>
+</ul>
+</div>
+<div id="análisis-de-rezagos-autocorrelación" class="section level2 hasAnchor" number="1.6">
+<h2><span class="header-section-number">1.6</span> Análisis de Rezagos (Autocorrelación)<a href="exploración-y-patrones-de-la-serie.html#análisis-de-rezagos-autocorrelación" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>La función de autocorrelación (ACF) y autocorrelación parcial (PACF) nos permiten identificar la dependencia temporal en la serie:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="exploración-y-patrones-de-la-serie.html#cb21-1" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>))</span>
+<span id="cb21-2"><a href="exploración-y-patrones-de-la-serie.html#cb21-2" tabindex="-1"></a><span class="fu">acf</span>(ipc_ts, <span class="at">lag.max =</span> <span class="dv">48</span>, <span class="at">main =</span> <span class="st">&quot;Función de Autocorrelación (ACF) - IPC Colombia&quot;</span>)</span>
+<span id="cb21-3"><a href="exploración-y-patrones-de-la-serie.html#cb21-3" tabindex="-1"></a><span class="fu">pacf</span>(ipc_ts, <span class="at">lag.max =</span> <span class="dv">48</span>, <span class="at">main =</span> <span class="st">&quot;Función de Autocorrelación Parcial (PACF) - IPC Colombia&quot;</span>)</span></code></pre></div>
+<p><img src="analisis-ipc-colombia_files/figure-html/acf-pacf-1.png" width="960" /></p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="exploración-y-patrones-de-la-serie.html#cb22-1" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div>
+<p>Del ACF se observa:</p>
+<ul>
+<li><strong>Autocorrelaciones significativas</strong> en los primeros rezagos (lag 1, 2, 3), lo que indica que el valor del IPC de un mes está correlacionado con los meses anteriores.</li>
+<li><strong>Picos en los rezagos 12, 24 y 36</strong>, evidenciando un patrón estacional anual claro.</li>
+<li>La <strong>decaimiento lento</strong> del ACF sugiere que la serie puede no ser estacionaria.</li>
+</ul>
+<p>Del PACF:</p>
+<ul>
+<li>Un <strong>pico significativo en lag 1</strong>, y otro en <strong>lag 12</strong>, lo cual sugiere componentes autoregresivos tanto regulares como estacionales.</li>
+</ul>
+</div>
+<div id="gráfico-de-rezagos" class="section level2 hasAnchor" number="1.7">
+<h2><span class="header-section-number">1.7</span> Gráfico de Rezagos<a href="exploración-y-patrones-de-la-serie.html#gráfico-de-rezagos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="exploración-y-patrones-de-la-serie.html#cb23-1" tabindex="-1"></a><span class="fu">gglagplot</span>(ipc_ts, <span class="at">lags =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb23-2"><a href="exploración-y-patrones-de-la-serie.html#cb23-2" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Gráfico de Rezagos - IPC Colombia&quot;</span>) <span class="sc">+</span></span>
+<span id="cb23-3"><a href="exploración-y-patrones-de-la-serie.html#cb23-3" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<p><img src="analisis-ipc-colombia_files/figure-html/lag-plot-1.png" width="960" /></p>
+<p>El gráfico de rezagos confirma una correlación positiva fuerte en lag 1 y lag 12, consistente con la estructura autoregresiva y estacional de la serie.</p>
+</div>
+<div id="análisis-de-estacionalidad" class="section level2 hasAnchor" number="1.8">
+<h2><span class="header-section-number">1.8</span> Análisis de Estacionalidad<a href="exploración-y-patrones-de-la-serie.html#análisis-de-estacionalidad" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="gráfico-estacional" class="section level3 hasAnchor" number="1.8.1">
+<h3><span class="header-section-number">1.8.1</span> Gráfico estacional<a href="exploración-y-patrones-de-la-serie.html#gráfico-estacional" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="exploración-y-patrones-de-la-serie.html#cb24-1" tabindex="-1"></a><span class="fu">ggseasonplot</span>(ipc_ts, <span class="at">year.labels =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb24-2"><a href="exploración-y-patrones-de-la-serie.html#cb24-2" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Gráfico Estacional - IPC Colombia&quot;</span>) <span class="sc">+</span></span>
+<span id="cb24-3"><a href="exploración-y-patrones-de-la-serie.html#cb24-3" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Mes&quot;</span>) <span class="sc">+</span></span>
+<span id="cb24-4"><a href="exploración-y-patrones-de-la-serie.html#cb24-4" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Variación mensual (%)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb24-5"><a href="exploración-y-patrones-de-la-serie.html#cb24-5" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<p><img src="analisis-ipc-colombia_files/figure-html/seasonal-plot-1.png" width="960" /></p>
+</div>
+<div id="gráfico-de-subseries-estacionales" class="section level3 hasAnchor" number="1.8.2">
+<h3><span class="header-section-number">1.8.2</span> Gráfico de subseries estacionales<a href="exploración-y-patrones-de-la-serie.html#gráfico-de-subseries-estacionales" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="exploración-y-patrones-de-la-serie.html#cb25-1" tabindex="-1"></a><span class="fu">ggsubseriesplot</span>(ipc_ts) <span class="sc">+</span></span>
+<span id="cb25-2"><a href="exploración-y-patrones-de-la-serie.html#cb25-2" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Subseries Estacionales - IPC Colombia&quot;</span>) <span class="sc">+</span></span>
+<span id="cb25-3"><a href="exploración-y-patrones-de-la-serie.html#cb25-3" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Mes&quot;</span>) <span class="sc">+</span></span>
+<span id="cb25-4"><a href="exploración-y-patrones-de-la-serie.html#cb25-4" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Variación mensual (%)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb25-5"><a href="exploración-y-patrones-de-la-serie.html#cb25-5" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<p><img src="analisis-ipc-colombia_files/figure-html/subseries-1.png" width="960" /></p>
+<p>El análisis estacional revela patrones claros:</p>
+<ul>
+<li><strong>Enero y febrero</strong> consistentemente registran las variaciones más altas del año. Esto se explica por los ajustes de precios anuales (arriendos, matrículas educativas, transporte, servicios públicos) que las empresas y el gobierno realizan al inicio de cada año.</li>
+<li><strong>Julio</strong> es típicamente el mes con menor variación, frecuentemente con valores cercanos a cero o negativos, influenciado por la temporada de rebajas de mitad de año.</li>
+<li><strong>Diciembre</strong> presenta un leve repunte por el incremento en la demanda asociado a la temporada navideña.</li>
+</ul>
+<p>Este patrón estacional es consistente a lo largo de los años analizados, con excepción de 2020 (pandemia) y 2022-2023 (choque inflacionario), donde el patrón se amplificó significativamente.</p>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="descomposición-estacionariedad-y-diferenciación.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["analisis-ipc-colombia.pdf"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>
