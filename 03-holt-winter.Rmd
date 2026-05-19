@@ -220,7 +220,13 @@ Visualizamos los componentes estimados por el modelo Holt-Winter aditivo para in
 
 ```{r hw-components, fig.width=10, fig.height=8, fig.cap="Componentes del modelo Holt-Winter aditivo: nivel, tendencia (slope) y estacionalidad."}
 # Extraer y visualizar los estados del modelo
-plot(hw_add$model, main = "Componentes del Modelo Holt-Winter Aditivo")
+cbind(Level = hw_add$model$states[,1],
+      Slope = hw_add$model$states[,2],
+      Seasonal = hw_add$model$states[,3]) |>
+  autoplot(facets = TRUE) +
+  labs(title = "Componentes del Modelo Holt-Winter Aditivo",
+       x = "Año") +
+  theme_minimal()
 ```
 
 ```{r hw-seasonal-factors}
@@ -249,7 +255,7 @@ barplot(as.numeric(seasonal_indices),
 abline(h = 0, lty = 2)
 ```
 
-**Interpretación de los índices estacionales:** Los meses con índices positivos (típicamente enero y febrero) tienen una inflación por encima del promedio, lo cual es consistente con los ajustes de precios de inicio de año en Colombia (incremento de arriendos, tarifas de servicios públicos, matrículas educativas). Los meses con índices negativos (usualmente julio y agosto) presentan inflación por debajo del promedio.
+**Interpretación de los índices estacionales:** Los meses con índices positivos (típicamente enero y febrero) tienen una inflación por encima del promedio, lo cual es consistente con los ajustes de precios de inicio de año en Colombia (incremento de arriendos, servicios públicos, matrículas educativas). Los meses con índices negativos (usualmente julio y agosto) presentan inflación por debajo del promedio.
 
 ## Selección automática del modelo: `ets()`
 
@@ -286,9 +292,13 @@ calcular_metricas <- function(real, pronostico, nombre) {
   error <- real - pronostico
   mae  <- mean(abs(error))
   rmse <- sqrt(mean(error^2))
-  # MAPE solo si no hay ceros
-  mape <- mean(abs(error / real)) * 100
-  mape <- ifelse(any(real == 0), NA, mape)
+  # MAPE: evitar división por cero
+  no_cero <- which(real != 0)
+  if (length(no_cero) > 0) {
+    mape <- mean(abs(error[no_cero] / real[no_cero])) * 100
+  } else {
+    mape <- NA
+  }
   
   data.frame(
     Modelo = nombre,
@@ -314,13 +324,14 @@ knitr::kable(metricas,
 ```
 
 ```{r error-barplot, fig.width=10, fig.height=5, fig.cap="Comparación del RMSE de los modelos evaluados. Valores más bajos indican mejor capacidad predictiva."}
+par(mar = c(8, 4, 3, 1))
 barplot(metricas$RMSE, 
         names.arg = metricas$Modelo,
         col = "steelblue",
         main = "RMSE por Modelo - Conjunto de Prueba",
         ylab = "RMSE",
         las = 2,
-        cex.names = 0.8,
+        cex.names = 0.7,
         border = NA)
 ```
 
