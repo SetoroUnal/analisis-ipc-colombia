@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Capítulo 4 Modelos ARIMA: Metodología Box-Jenkins | Análisis de Series de Tiempo: Índice de Precios al Consumidor (IPC) de Colombia</title>
+  <meta name="description" content="Análisis del comportamiento del IPC en Colombia mediante técnicas de series de tiempo." />
+  <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Capítulo 4 Modelos ARIMA: Metodología Box-Jenkins | Análisis de Series de Tiempo: Índice de Precios al Consumidor (IPC) de Colombia" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Análisis del comportamiento del IPC en Colombia mediante técnicas de series de tiempo." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Capítulo 4 Modelos ARIMA: Metodología Box-Jenkins | Análisis de Series de Tiempo: Índice de Precios al Consumidor (IPC) de Colombia" />
+  
+  <meta name="twitter:description" content="Análisis del comportamiento del IPC en Colombia mediante técnicas de series de tiempo." />
+  
+
+<meta name="author" content="Juan Sebastian Torres Romero - Maestría en Ciencia de Datos, Universidad Javeriana Cali" />
+
+
+<meta name="date" content="2026-05-24" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="suavizamiento-exponencial-y-método-de-holt-winter.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Análisis de Series de Tiempo: IPC Colombia</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Propuesta</a>
+<ul>
+<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#justificación"><i class="fa fa-check"></i><b>0.1</b> Justificación</a></li>
+<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#datos-seleccionados"><i class="fa fa-check"></i><b>0.2</b> Datos seleccionados</a></li>
+<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#fuentes-de-información"><i class="fa fa-check"></i><b>0.3</b> Fuentes de información</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html"><i class="fa fa-check"></i><b>1</b> Exploración y Patrones de la Serie</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html#carga-de-librerías-y-datos"><i class="fa fa-check"></i><b>1.1</b> Carga de librerías y datos</a></li>
+<li class="chapter" data-level="1.2" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html#conversión-a-objeto-de-serie-de-tiempo"><i class="fa fa-check"></i><b>1.2</b> Conversión a objeto de serie de tiempo</a></li>
+<li class="chapter" data-level="1.3" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html#visualización-inicial-de-la-serie"><i class="fa fa-check"></i><b>1.3</b> Visualización inicial de la serie</a></li>
+<li class="chapter" data-level="1.4" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html#estadísticas-descriptivas"><i class="fa fa-check"></i><b>1.4</b> Estadísticas descriptivas</a></li>
+<li class="chapter" data-level="1.5" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html#promedio-móvil"><i class="fa fa-check"></i><b>1.5</b> Promedio Móvil</a></li>
+<li class="chapter" data-level="1.6" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html#análisis-de-rezagos-autocorrelación"><i class="fa fa-check"></i><b>1.6</b> Análisis de Rezagos (Autocorrelación)</a></li>
+<li class="chapter" data-level="1.7" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html#gráfico-de-rezagos"><i class="fa fa-check"></i><b>1.7</b> Gráfico de Rezagos</a></li>
+<li class="chapter" data-level="1.8" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html#análisis-de-estacionalidad"><i class="fa fa-check"></i><b>1.8</b> Análisis de Estacionalidad</a>
+<ul>
+<li class="chapter" data-level="1.8.1" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html#gráfico-estacional"><i class="fa fa-check"></i><b>1.8.1</b> Gráfico estacional</a></li>
+<li class="chapter" data-level="1.8.2" data-path="exploración-y-patrones-de-la-serie.html"><a href="exploración-y-patrones-de-la-serie.html#gráfico-de-subseries-estacionales"><i class="fa fa-check"></i><b>1.8.2</b> Gráfico de subseries estacionales</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html"><i class="fa fa-check"></i><b>2</b> Descomposición, Estacionariedad y Diferenciación</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#descomposición-de-la-serie"><i class="fa fa-check"></i><b>2.1</b> Descomposición de la serie</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#descomposición-aditiva"><i class="fa fa-check"></i><b>2.1.1</b> Descomposición aditiva</a></li>
+<li class="chapter" data-level="2.1.2" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#descomposición-multiplicativa"><i class="fa fa-check"></i><b>2.1.2</b> Descomposición multiplicativa</a></li>
+<li class="chapter" data-level="2.1.3" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#descomposición-stl"><i class="fa fa-check"></i><b>2.1.3</b> Descomposición STL</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#pruebas-de-estacionariedad"><i class="fa fa-check"></i><b>2.2</b> Pruebas de Estacionariedad</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#prueba-augmented-dickey-fuller-adf"><i class="fa fa-check"></i><b>2.2.1</b> Prueba Augmented Dickey-Fuller (ADF)</a></li>
+<li class="chapter" data-level="2.2.2" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#prueba-kpss"><i class="fa fa-check"></i><b>2.2.2</b> Prueba KPSS</a></li>
+<li class="chapter" data-level="2.2.3" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#número-de-diferencias-requeridas"><i class="fa fa-check"></i><b>2.2.3</b> Número de diferencias requeridas</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#diferenciación"><i class="fa fa-check"></i><b>2.3</b> Diferenciación</a>
+<ul>
+<li class="chapter" data-level="2.3.1" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#diferenciación-ordinaria-d-1"><i class="fa fa-check"></i><b>2.3.1</b> Diferenciación ordinaria (d = 1)</a></li>
+<li class="chapter" data-level="2.3.2" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#verificación-de-estacionariedad-de-la-serie-diferenciada"><i class="fa fa-check"></i><b>2.3.2</b> Verificación de estacionariedad de la serie diferenciada</a></li>
+<li class="chapter" data-level="2.3.3" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#diferenciación-estacional-d-1-lag-12"><i class="fa fa-check"></i><b>2.3.3</b> Diferenciación estacional (D = 1, lag = 12)</a></li>
+<li class="chapter" data-level="2.3.4" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#acf-y-pacf-de-la-serie-diferenciada"><i class="fa fa-check"></i><b>2.3.4</b> ACF y PACF de la serie diferenciada</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#transformaciones"><i class="fa fa-check"></i><b>2.4</b> Transformaciones</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#evaluación-de-la-necesidad-de-transformación"><i class="fa fa-check"></i><b>2.4.1</b> Evaluación de la necesidad de transformación</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="descomposición-estacionariedad-y-diferenciación.html"><a href="descomposición-estacionariedad-y-diferenciación.html#resumen-del-preprocesamiento"><i class="fa fa-check"></i><b>2.5</b> Resumen del preprocesamiento</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="suavizamiento-exponencial-y-método-de-holt-winter.html"><a href="suavizamiento-exponencial-y-método-de-holt-winter.html"><i class="fa fa-check"></i><b>3</b> Suavizamiento Exponencial y Método de Holt-Winter</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="suavizamiento-exponencial-y-método-de-holt-winter.html"><a href="suavizamiento-exponencial-y-método-de-holt-winter.html#fundamento-teórico"><i class="fa fa-check"></i><b>3.1</b> Fundamento teórico</a></li>
+<li class="chapter" data-level="3.2" data-path="suavizamiento-exponencial-y-método-de-holt-winter.html"><a href="suavizamiento-exponencial-y-método-de-holt-winter.html#preparación-de-los-datos"><i class="fa fa-check"></i><b>3.2</b> Preparación de los datos</a></li>
+<li class="chapter" data-level="3.3" data-path="suavizamiento-exponencial-y-método-de-holt-winter.html"><a href="suavizamiento-exponencial-y-método-de-holt-winter.html#suavizamiento-exponencial-simple-ses"><i class="fa fa-check"></i><b>3.3</b> Suavizamiento Exponencial Simple (SES)</a></li>
+<li class="chapter" data-level="3.4" data-path="suavizamiento-exponencial-y-método-de-holt-winter.html"><a href="suavizamiento-exponencial-y-método-de-holt-winter.html#método-de-holt-suavizamiento-exponencial-doble"><i class="fa fa-check"></i><b>3.4</b> Método de Holt (Suavizamiento Exponencial Doble)</a></li>
+<li class="chapter" data-level="3.5" data-path="suavizamiento-exponencial-y-método-de-holt-winter.html"><a href="suavizamiento-exponencial-y-método-de-holt-winter.html#método-de-holt-winter"><i class="fa fa-check"></i><b>3.5</b> Método de Holt-Winter</a>
+<ul>
+<li class="chapter" data-level="3.5.1" data-path="suavizamiento-exponencial-y-método-de-holt-winter.html"><a href="suavizamiento-exponencial-y-método-de-holt-winter.html#justificación-de-la-elección-del-modelo"><i class="fa fa-check"></i><b>3.5.1</b> Justificación de la elección del modelo</a></li>
+<li class="chapter" data-level="3.5.2" data-path="suavizamiento-exponencial-y-método-de-holt-winter.html"><a href="suavizamiento-exponencial-y-método-de-holt-winter.html#modelo-aditivo"><i class="fa fa-check"></i><b>3.5.2</b> Modelo aditivo</a></li>
+<li class="chapter" data-level="3.5.3" data-path="suavizamiento-exponencial-y-método-de-holt-winter.html"><a href="suavizamiento-exponencial-y-método-de-holt-winter.html#modelo-multiplicativo"><i class="fa fa-check"></i><b>3.5.3</b> Modelo multiplicativo</a></li>
+<li class="chapter" data-level="3.5.4" data-path="suavizamiento-exponencial-y-método-de-holt-winter.html"><a href="suavizamiento-exponencial-y-método-de-holt-winter.html#holt-winter-con-tendencia-amortiguada"><i class="fa fa-check"></i><b>3.5.4</b> Holt-Winter con tendencia amortiguada</a></li>
+</ul></li>
+<li class="chapter" data-level="3.6" data-path="suavizamiento-exponencial-y-método-de-holt-winter.html"><a href="suavizamiento-exponencial-y-método-de-holt-winter.html#componentes-del-modelo-holt-winter"><i class="fa fa-check"></i><b>3.6</b> Componentes del modelo Holt-Winter</a></li>
+<li class="chapter" data-level="3.7" data-path="suavizamiento-exponencial-y-método-de-holt-winter.html"><a href="suavizamiento-exponencial-y-método-de-holt-winter.html#selección-automática-del-modelo-ets"><i class="fa fa-check"></i><b>3.7</b> Selección automática del modelo: <code>ets()</code></a></li>
+<li class="chapter" data-level="3.8" data-path="suavizamiento-exponencial-y-método-de-holt-winter.html"><a href="suavizamiento-exponencial-y-método-de-holt-winter.html#evaluación-de-los-modelos"><i class="fa fa-check"></i><b>3.8</b> Evaluación de los modelos</a>
+<ul>
+<li class="chapter" data-level="3.8.1" data-path="suavizamiento-exponencial-y-método-de-holt-winter.html"><a href="suavizamiento-exponencial-y-método-de-holt-winter.html#métricas-de-error-en-el-conjunto-de-prueba"><i class="fa fa-check"></i><b>3.8.1</b> Métricas de error en el conjunto de prueba</a></li>
+<li class="chapter" data-level="3.8.2" data-path="suavizamiento-exponencial-y-método-de-holt-winter.html"><a href="suavizamiento-exponencial-y-método-de-holt-winter.html#análisis-de-residuos-del-mejor-modelo"><i class="fa fa-check"></i><b>3.8.2</b> Análisis de residuos del mejor modelo</a></li>
+</ul></li>
+<li class="chapter" data-level="3.9" data-path="suavizamiento-exponencial-y-método-de-holt-winter.html"><a href="suavizamiento-exponencial-y-método-de-holt-winter.html#pronóstico-final"><i class="fa fa-check"></i><b>3.9</b> Pronóstico final</a></li>
+<li class="chapter" data-level="3.10" data-path="suavizamiento-exponencial-y-método-de-holt-winter.html"><a href="suavizamiento-exponencial-y-método-de-holt-winter.html#conclusiones-del-análisis-de-suavizamiento"><i class="fa fa-check"></i><b>3.10</b> Conclusiones del análisis de suavizamiento</a></li>
+<li class="chapter" data-level="3.11" data-path="suavizamiento-exponencial-y-método-de-holt-winter.html"><a href="suavizamiento-exponencial-y-método-de-holt-winter.html#referencias"><i class="fa fa-check"></i><b>3.11</b> Referencias</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="modelos-arima-metodología-box-jenkins.html"><a href="modelos-arima-metodología-box-jenkins.html"><i class="fa fa-check"></i><b>4</b> Modelos ARIMA: Metodología Box-Jenkins</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="modelos-arima-metodología-box-jenkins.html"><a href="modelos-arima-metodología-box-jenkins.html#fundamento-teórico-1"><i class="fa fa-check"></i><b>4.1</b> Fundamento teórico</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="modelos-arima-metodología-box-jenkins.html"><a href="modelos-arima-metodología-box-jenkins.html#metodología-box-jenkins"><i class="fa fa-check"></i><b>4.1.1</b> Metodología Box-Jenkins</a></li>
+<li class="chapter" data-level="4.1.2" data-path="modelos-arima-metodología-box-jenkins.html"><a href="modelos-arima-metodología-box-jenkins.html#componentes-del-modelo-arima"><i class="fa fa-check"></i><b>4.1.2</b> Componentes del modelo ARIMA</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="modelos-arima-metodología-box-jenkins.html"><a href="modelos-arima-metodología-box-jenkins.html#preparación-de-los-datos-1"><i class="fa fa-check"></i><b>4.2</b> Preparación de los datos</a></li>
+<li class="chapter" data-level="4.3" data-path="modelos-arima-metodología-box-jenkins.html"><a href="modelos-arima-metodología-box-jenkins.html#paso-1-verificación-de-estacionariedad"><i class="fa fa-check"></i><b>4.3</b> Paso 1: Verificación de estacionariedad</a></li>
+<li class="chapter" data-level="4.4" data-path="modelos-arima-metodología-box-jenkins.html"><a href="modelos-arima-metodología-box-jenkins.html#paso-2-diferenciación"><i class="fa fa-check"></i><b>4.4</b> Paso 2: Diferenciación</a></li>
+<li class="chapter" data-level="4.5" data-path="modelos-arima-metodología-box-jenkins.html"><a href="modelos-arima-metodología-box-jenkins.html#paso-3-identificación-de-parámetros-con-acf-y-pacf"><i class="fa fa-check"></i><b>4.5</b> Paso 3: Identificación de parámetros con ACF y PACF</a></li>
+<li class="chapter" data-level="4.6" data-path="modelos-arima-metodología-box-jenkins.html"><a href="modelos-arima-metodología-box-jenkins.html#paso-4-ajuste-del-modelo-arima"><i class="fa fa-check"></i><b>4.6</b> Paso 4: Ajuste del modelo ARIMA</a>
+<ul>
+<li class="chapter" data-level="4.6.1" data-path="modelos-arima-metodología-box-jenkins.html"><a href="modelos-arima-metodología-box-jenkins.html#selección-automática-con-auto.arima"><i class="fa fa-check"></i><b>4.6.1</b> Selección automática con <code>auto.arima()</code></a></li>
+<li class="chapter" data-level="4.6.2" data-path="modelos-arima-metodología-box-jenkins.html"><a href="modelos-arima-metodología-box-jenkins.html#modelos-candidatos-alternativos"><i class="fa fa-check"></i><b>4.6.2</b> Modelos candidatos alternativos</a></li>
+</ul></li>
+<li class="chapter" data-level="4.7" data-path="modelos-arima-metodología-box-jenkins.html"><a href="modelos-arima-metodología-box-jenkins.html#paso-5-verificación-de-supuestos-análisis-de-residuos"><i class="fa fa-check"></i><b>4.7</b> Paso 5: Verificación de supuestos (Análisis de residuos)</a></li>
+<li class="chapter" data-level="4.8" data-path="modelos-arima-metodología-box-jenkins.html"><a href="modelos-arima-metodología-box-jenkins.html#detección-de-puntos-de-cambio-y-valores-atípicos"><i class="fa fa-check"></i><b>4.8</b> Detección de puntos de cambio y valores atípicos</a></li>
+<li class="chapter" data-level="4.9" data-path="modelos-arima-metodología-box-jenkins.html"><a href="modelos-arima-metodología-box-jenkins.html#paso-6-pronóstico-con-el-modelo-arima"><i class="fa fa-check"></i><b>4.9</b> Paso 6: Pronóstico con el modelo ARIMA</a>
+<ul>
+<li class="chapter" data-level="4.9.1" data-path="modelos-arima-metodología-box-jenkins.html"><a href="modelos-arima-metodología-box-jenkins.html#pronóstico-sobre-el-conjunto-de-prueba"><i class="fa fa-check"></i><b>4.9.1</b> Pronóstico sobre el conjunto de prueba</a></li>
+<li class="chapter" data-level="4.9.2" data-path="modelos-arima-metodología-box-jenkins.html"><a href="modelos-arima-metodología-box-jenkins.html#métricas-de-error"><i class="fa fa-check"></i><b>4.9.2</b> Métricas de error</a></li>
+</ul></li>
+<li class="chapter" data-level="4.10" data-path="modelos-arima-metodología-box-jenkins.html"><a href="modelos-arima-metodología-box-jenkins.html#comparación-arima-vs.-holt-winter"><i class="fa fa-check"></i><b>4.10</b> Comparación: ARIMA vs. Holt-Winter</a>
+<ul>
+<li class="chapter" data-level="4.10.1" data-path="modelos-arima-metodología-box-jenkins.html"><a href="modelos-arima-metodología-box-jenkins.html#pronóstico-final-para-2026"><i class="fa fa-check"></i><b>4.10.1</b> Pronóstico final para 2026</a></li>
+</ul></li>
+<li class="chapter" data-level="4.11" data-path="modelos-arima-metodología-box-jenkins.html"><a href="modelos-arima-metodología-box-jenkins.html#conclusiones-del-análisis-arima"><i class="fa fa-check"></i><b>4.11</b> Conclusiones del análisis ARIMA</a></li>
+<li class="chapter" data-level="4.12" data-path="modelos-arima-metodología-box-jenkins.html"><a href="modelos-arima-metodología-box-jenkins.html#referencias-1"><i class="fa fa-check"></i><b>4.12</b> Referencias</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Publicado con bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Análisis de Series de Tiempo: Índice de Precios al Consumidor (IPC) de Colombia</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="modelos-arima-metodología-box-jenkins" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">Capítulo 4</span> Modelos ARIMA: Metodología Box-Jenkins<a href="modelos-arima-metodología-box-jenkins.html#modelos-arima-metodología-box-jenkins" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>En este capítulo se aplica la metodología Box-Jenkins para ajustar modelos autoregresivos integrados de media móvil (ARIMA) a la serie de variación mensual del IPC de Colombia. Este enfoque complementa el suavizamiento exponencial del capítulo anterior al modelar explícitamente la estructura de autocorrelación de la serie, permitiendo capturar dependencias lineales entre observaciones pasadas y presentes.</p>
+<div id="fundamento-teórico-1" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> Fundamento teórico<a href="modelos-arima-metodología-box-jenkins.html#fundamento-teórico-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="metodología-box-jenkins" class="section level3 hasAnchor" number="4.1.1">
+<h3><span class="header-section-number">4.1.1</span> Metodología Box-Jenkins<a href="modelos-arima-metodología-box-jenkins.html#metodología-box-jenkins" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>La metodología Box-Jenkins, propuesta por George E. P. Box y Gwilym Jenkins (1970), es un procedimiento sistemático para identificar, estimar y validar modelos ARIMA. Consta de los siguientes pasos:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Visualizar la serie</strong> y evaluar sus características.</li>
+<li><strong>Transformarla en estacionaria</strong> mediante diferenciación (si es necesario).</li>
+<li><strong>Graficar ACF y PACF</strong> para identificar los órdenes <span class="math inline">\(p\)</span> y <span class="math inline">\(q\)</span> del modelo.</li>
+<li><strong>Construir el modelo</strong> ARIMA<span class="math inline">\((p,d,q)\)</span>.</li>
+<li><strong>Verificar supuestos</strong> sobre los residuos.</li>
+<li><strong>Hacer predicción.</strong></li>
+</ol>
+</div>
+<div id="componentes-del-modelo-arima" class="section level3 hasAnchor" number="4.1.2">
+<h3><span class="header-section-number">4.1.2</span> Componentes del modelo ARIMA<a href="modelos-arima-metodología-box-jenkins.html#componentes-del-modelo-arima" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Un modelo ARIMA<span class="math inline">\((p,d,q)\)</span> combina tres elementos:</p>
+<ul>
+<li><strong>AR(<span class="math inline">\(p\)</span>) — Autoregresivo:</strong> La observación actual depende linealmente de las <span class="math inline">\(p\)</span> observaciones anteriores. Se identifica por un PACF que se trunca en el rezago <span class="math inline">\(p\)</span>.</li>
+<li><strong>I(<span class="math inline">\(d\)</span>) — Integrado:</strong> Indica cuántas veces se diferencia la serie para lograr estacionariedad.</li>
+<li><strong>MA(<span class="math inline">\(q\)</span>) — Media Móvil:</strong> La observación actual depende de los <span class="math inline">\(q\)</span> errores de pronóstico anteriores. Se identifica por un ACF que se trunca en el rezago <span class="math inline">\(q\)</span>.</li>
+</ul>
+<p>Para series con estacionalidad, se extiende a ARIMA<span class="math inline">\((p,d,q)(P,D,Q)_m\)</span>, donde <span class="math inline">\((P,D,Q)\)</span> son los órdenes estacionales y <span class="math inline">\(m\)</span> es el período estacional (12 para datos mensuales).</p>
+</div>
+</div>
+<div id="preparación-de-los-datos-1" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> Preparación de los datos<a href="modelos-arima-metodología-box-jenkins.html#preparación-de-los-datos-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="modelos-arima-metodología-box-jenkins.html#cb234-1" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
+<span id="cb234-2"><a href="modelos-arima-metodología-box-jenkins.html#cb234-2" tabindex="-1"></a><span class="fu">library</span>(tseries)</span>
+<span id="cb234-3"><a href="modelos-arima-metodología-box-jenkins.html#cb234-3" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb234-4"><a href="modelos-arima-metodología-box-jenkins.html#cb234-4" tabindex="-1"></a><span class="fu">library</span>(lmtest)</span>
+<span id="cb234-5"><a href="modelos-arima-metodología-box-jenkins.html#cb234-5" tabindex="-1"></a></span>
+<span id="cb234-6"><a href="modelos-arima-metodología-box-jenkins.html#cb234-6" tabindex="-1"></a><span class="co"># Datos: Variación mensual del IPC Colombia (2010-2025)</span></span>
+<span id="cb234-7"><a href="modelos-arima-metodología-box-jenkins.html#cb234-7" tabindex="-1"></a>ipc_data <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb234-8"><a href="modelos-arima-metodología-box-jenkins.html#cb234-8" tabindex="-1"></a>  <span class="fl">0.69</span>, <span class="fl">0.83</span>, <span class="fl">0.25</span>, <span class="fl">0.46</span>, <span class="fl">0.10</span>, <span class="fl">0.11</span>, <span class="sc">-</span><span class="fl">0.04</span>, <span class="fl">0.11</span>, <span class="sc">-</span><span class="fl">0.13</span>, <span class="sc">-</span><span class="fl">0.09</span>, <span class="fl">0.19</span>, <span class="fl">0.65</span>,</span>
+<span id="cb234-9"><a href="modelos-arima-metodología-box-jenkins.html#cb234-9" tabindex="-1"></a>  <span class="fl">0.91</span>, <span class="fl">0.60</span>, <span class="fl">0.27</span>, <span class="fl">0.12</span>, <span class="fl">0.28</span>, <span class="fl">0.32</span>, <span class="fl">0.14</span>, <span class="fl">0.03</span>, <span class="fl">0.31</span>, <span class="fl">0.19</span>, <span class="fl">0.14</span>, <span class="fl">0.42</span>,</span>
+<span id="cb234-10"><a href="modelos-arima-metodología-box-jenkins.html#cb234-10" tabindex="-1"></a>  <span class="fl">0.73</span>, <span class="fl">0.61</span>, <span class="fl">0.26</span>, <span class="fl">0.14</span>, <span class="fl">0.30</span>, <span class="fl">0.23</span>, <span class="sc">-</span><span class="fl">0.02</span>, <span class="fl">0.04</span>, <span class="fl">0.29</span>, <span class="fl">0.16</span>, <span class="sc">-</span><span class="fl">0.14</span>, <span class="fl">0.09</span>,</span>
+<span id="cb234-11"><a href="modelos-arima-metodología-box-jenkins.html#cb234-11" tabindex="-1"></a>  <span class="fl">0.49</span>, <span class="fl">0.44</span>, <span class="fl">0.21</span>, <span class="fl">0.27</span>, <span class="fl">0.28</span>, <span class="fl">0.23</span>, <span class="fl">0.25</span>, <span class="fl">0.06</span>, <span class="fl">0.29</span>, <span class="sc">-</span><span class="fl">0.26</span>, <span class="sc">-</span><span class="fl">0.22</span>, <span class="fl">0.26</span>,</span>
+<span id="cb234-12"><a href="modelos-arima-metodología-box-jenkins.html#cb234-12" tabindex="-1"></a>  <span class="fl">0.63</span>, <span class="fl">0.48</span>, <span class="fl">0.46</span>, <span class="fl">0.46</span>, <span class="fl">0.48</span>, <span class="fl">0.06</span>, <span class="fl">0.15</span>, <span class="fl">0.20</span>, <span class="fl">0.16</span>, <span class="fl">0.13</span>, <span class="fl">0.13</span>, <span class="fl">0.27</span>,</span>
+<span id="cb234-13"><a href="modelos-arima-metodología-box-jenkins.html#cb234-13" tabindex="-1"></a>  <span class="fl">0.73</span>, <span class="fl">1.28</span>, <span class="fl">0.94</span>, <span class="fl">0.59</span>, <span class="fl">0.51</span>, <span class="fl">0.48</span>, <span class="fl">0.87</span>, <span class="fl">0.32</span>, <span class="fl">0.52</span>, <span class="fl">0.42</span>, <span class="fl">0.60</span>, <span class="fl">0.77</span>,</span>
+<span id="cb234-14"><a href="modelos-arima-metodología-box-jenkins.html#cb234-14" tabindex="-1"></a>  <span class="fl">1.67</span>, <span class="fl">1.63</span>, <span class="fl">1.00</span>, <span class="fl">0.70</span>, <span class="fl">0.43</span>, <span class="fl">0.61</span>, <span class="fl">0.26</span>, <span class="fl">0.33</span>, <span class="fl">0.36</span>, <span class="fl">0.19</span>, <span class="fl">0.29</span>, <span class="fl">0.44</span>,</span>
+<span id="cb234-15"><a href="modelos-arima-metodología-box-jenkins.html#cb234-15" tabindex="-1"></a>  <span class="fl">0.56</span>, <span class="fl">0.39</span>, <span class="fl">0.31</span>, <span class="fl">0.12</span>, <span class="fl">0.02</span>, <span class="fl">0.04</span>, <span class="sc">-</span><span class="fl">0.06</span>, <span class="fl">0.28</span>, <span class="fl">0.45</span>, <span class="fl">0.23</span>, <span class="fl">0.11</span>, <span class="fl">0.08</span>,</span>
+<span id="cb234-16"><a href="modelos-arima-metodología-box-jenkins.html#cb234-16" tabindex="-1"></a>  <span class="fl">0.64</span>, <span class="fl">0.48</span>, <span class="fl">0.37</span>, <span class="fl">0.34</span>, <span class="fl">0.01</span>, <span class="fl">0.22</span>, <span class="fl">0.15</span>, <span class="fl">0.00</span>, <span class="fl">0.47</span>, <span class="fl">0.14</span>, <span class="fl">0.15</span>, <span class="fl">0.19</span>,</span>
+<span id="cb234-17"><a href="modelos-arima-metodología-box-jenkins.html#cb234-17" tabindex="-1"></a>  <span class="fl">0.62</span>, <span class="fl">1.14</span>, <span class="fl">0.77</span>, <span class="fl">0.59</span>, <span class="fl">0.37</span>, <span class="fl">0.36</span>, <span class="fl">0.28</span>, <span class="fl">0.04</span>, <span class="fl">0.20</span>, <span class="fl">0.10</span>, <span class="fl">0.11</span>, <span class="fl">0.32</span>,</span>
+<span id="cb234-18"><a href="modelos-arima-metodología-box-jenkins.html#cb234-18" tabindex="-1"></a>  <span class="fl">1.02</span>, <span class="fl">0.87</span>, <span class="fl">0.47</span>, <span class="fl">0.54</span>, <span class="fl">0.13</span>, <span class="fl">0.30</span>, <span class="fl">0.18</span>, <span class="sc">-</span><span class="fl">0.04</span>, <span class="fl">0.32</span>, <span class="fl">0.07</span>, <span class="fl">0.06</span>, <span class="fl">0.26</span>,</span>
+<span id="cb234-19"><a href="modelos-arima-metodología-box-jenkins.html#cb234-19" tabindex="-1"></a>  <span class="fl">0.67</span>, <span class="fl">0.44</span>, <span class="fl">0.23</span>, <span class="fl">0.28</span>, <span class="fl">0.31</span>, <span class="fl">0.38</span>, <span class="fl">0.13</span>, <span class="fl">0.25</span>, <span class="fl">0.26</span>, <span class="fl">0.16</span>, <span class="fl">0.07</span>, <span class="fl">0.23</span>,</span>
+<span id="cb234-20"><a href="modelos-arima-metodología-box-jenkins.html#cb234-20" tabindex="-1"></a>  <span class="fl">0.35</span>, <span class="fl">0.72</span>, <span class="fl">0.42</span>, <span class="fl">0.59</span>, <span class="fl">0.22</span>, <span class="fl">0.22</span>, <span class="fl">0.04</span>, <span class="sc">-</span><span class="fl">0.32</span>, <span class="sc">-</span><span class="fl">0.06</span>, <span class="fl">0.14</span>, <span class="fl">0.01</span>, <span class="fl">0.38</span>,</span>
+<span id="cb234-21"><a href="modelos-arima-metodología-box-jenkins.html#cb234-21" tabindex="-1"></a>  <span class="fl">0.42</span>, <span class="fl">0.64</span>, <span class="fl">0.56</span>, <span class="fl">0.47</span>, <span class="fl">0.32</span>, <span class="fl">0.23</span>, <span class="fl">0.11</span>, <span class="fl">0.05</span>, <span class="fl">0.40</span>, <span class="fl">0.15</span>, <span class="fl">0.22</span>, <span class="fl">0.45</span>,</span>
+<span id="cb234-22"><a href="modelos-arima-metodología-box-jenkins.html#cb234-22" tabindex="-1"></a>  <span class="fl">1.61</span>, <span class="fl">0.81</span>, <span class="fl">0.48</span>, <span class="fl">1.25</span>, <span class="fl">0.68</span>, <span class="fl">0.74</span>, <span class="fl">0.23</span>, <span class="fl">0.17</span>, <span class="fl">0.49</span>, <span class="fl">0.15</span>, <span class="sc">-</span><span class="fl">0.14</span>, <span class="fl">0.54</span>,</span>
+<span id="cb234-23"><a href="modelos-arima-metodología-box-jenkins.html#cb234-23" tabindex="-1"></a>  <span class="fl">1.78</span>, <span class="fl">1.67</span>, <span class="fl">1.92</span>, <span class="fl">0.70</span>, <span class="fl">0.72</span>, <span class="fl">0.40</span>, <span class="fl">0.81</span>, <span class="fl">1.02</span>, <span class="fl">0.67</span>, <span class="fl">0.72</span>, <span class="fl">0.77</span>, <span class="fl">1.26</span></span>
+<span id="cb234-24"><a href="modelos-arima-metodología-box-jenkins.html#cb234-24" tabindex="-1"></a>)</span>
+<span id="cb234-25"><a href="modelos-arima-metodología-box-jenkins.html#cb234-25" tabindex="-1"></a></span>
+<span id="cb234-26"><a href="modelos-arima-metodología-box-jenkins.html#cb234-26" tabindex="-1"></a>ipc_ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(ipc_data, <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">2010</span>, <span class="dv">1</span>), <span class="at">frequency =</span> <span class="dv">12</span>)</span>
+<span id="cb234-27"><a href="modelos-arima-metodología-box-jenkins.html#cb234-27" tabindex="-1"></a></span>
+<span id="cb234-28"><a href="modelos-arima-metodología-box-jenkins.html#cb234-28" tabindex="-1"></a><span class="co"># Separar en entrenamiento y prueba</span></span>
+<span id="cb234-29"><a href="modelos-arima-metodología-box-jenkins.html#cb234-29" tabindex="-1"></a>ipc_train <span class="ot">&lt;-</span> <span class="fu">window</span>(ipc_ts, <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2023</span>, <span class="dv">12</span>))</span>
+<span id="cb234-30"><a href="modelos-arima-metodología-box-jenkins.html#cb234-30" tabindex="-1"></a>ipc_test  <span class="ot">&lt;-</span> <span class="fu">window</span>(ipc_ts, <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">2024</span>, <span class="dv">1</span>))</span></code></pre></div>
+</div>
+<div id="paso-1-verificación-de-estacionariedad" class="section level2 hasAnchor" number="4.3">
+<h2><span class="header-section-number">4.3</span> Paso 1: Verificación de estacionariedad<a href="modelos-arima-metodología-box-jenkins.html#paso-1-verificación-de-estacionariedad" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Como se demostró en el Capítulo 2, la serie original no es estacionaria. Retomamos las pruebas de Dickey-Fuller Aumentada (ADF) y KPSS para confirmar:</p>
+<div class="sourceCode" id="cb235"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb235-1"><a href="modelos-arima-metodología-box-jenkins.html#cb235-1" tabindex="-1"></a><span class="co"># Prueba ADF sobre la serie original</span></span>
+<span id="cb235-2"><a href="modelos-arima-metodología-box-jenkins.html#cb235-2" tabindex="-1"></a>adf_original <span class="ot">&lt;-</span> <span class="fu">adf.test</span>(ipc_train)</span></code></pre></div>
+<pre><code>## Warning in adf.test(ipc_train): p-value smaller than printed p-value</code></pre>
+<div class="sourceCode" id="cb237"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb237-1"><a href="modelos-arima-metodología-box-jenkins.html#cb237-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;=== Prueba ADF - Serie Original ===</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## === Prueba ADF - Serie Original ===</code></pre>
+<div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb239-1"><a href="modelos-arima-metodología-box-jenkins.html#cb239-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  Dickey-Fuller =&quot;</span>, <span class="fu">round</span>(adf_original<span class="sc">$</span>statistic, <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>##   Dickey-Fuller = -5.452</code></pre>
+<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="modelos-arima-metodología-box-jenkins.html#cb241-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  p-valor =&quot;</span>, <span class="fu">round</span>(adf_original<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>##   p-valor = 0.01</code></pre>
+<div class="sourceCode" id="cb243"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb243-1"><a href="modelos-arima-metodología-box-jenkins.html#cb243-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  Conclusión:&quot;</span>, <span class="fu">ifelse</span>(adf_original<span class="sc">$</span>p.value <span class="sc">&lt;</span> <span class="fl">0.05</span>,</span>
+<span id="cb243-2"><a href="modelos-arima-metodología-box-jenkins.html#cb243-2" tabindex="-1"></a>    <span class="st">&quot;Estacionaria (p &lt; 0.05)&quot;</span>,</span>
+<span id="cb243-3"><a href="modelos-arima-metodología-box-jenkins.html#cb243-3" tabindex="-1"></a>    <span class="st">&quot;NO estacionaria (p &gt;= 0.05)&quot;</span>), <span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>##   Conclusión: Estacionaria (p &lt; 0.05)</code></pre>
+<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="modelos-arima-metodología-box-jenkins.html#cb245-1" tabindex="-1"></a><span class="co"># ¿Cuántas diferencias necesitamos?</span></span>
+<span id="cb245-2"><a href="modelos-arima-metodología-box-jenkins.html#cb245-2" tabindex="-1"></a>d_regular <span class="ot">&lt;-</span> <span class="fu">ndiffs</span>(ipc_train)</span>
+<span id="cb245-3"><a href="modelos-arima-metodología-box-jenkins.html#cb245-3" tabindex="-1"></a>d_estacional <span class="ot">&lt;-</span> <span class="fu">nsdiffs</span>(ipc_train)</span>
+<span id="cb245-4"><a href="modelos-arima-metodología-box-jenkins.html#cb245-4" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Diferencias regulares necesarias (ndiffs):&quot;</span>, d_regular, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Diferencias regulares necesarias (ndiffs): 0</code></pre>
+<div class="sourceCode" id="cb247"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb247-1"><a href="modelos-arima-metodología-box-jenkins.html#cb247-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Diferencias estacionales necesarias (nsdiffs):&quot;</span>, d_estacional, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Diferencias estacionales necesarias (nsdiffs): 1</code></pre>
+</div>
+<div id="paso-2-diferenciación" class="section level2 hasAnchor" number="4.4">
+<h2><span class="header-section-number">4.4</span> Paso 2: Diferenciación<a href="modelos-arima-metodología-box-jenkins.html#paso-2-diferenciación" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Aplicamos la diferenciación según lo indicado por <code>ndiffs()</code> y verificamos que la serie diferenciada sea estacionaria:</p>
+<div class="sourceCode" id="cb249"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb249-1"><a href="modelos-arima-metodología-box-jenkins.html#cb249-1" tabindex="-1"></a><span class="co"># Aplicar diferenciación regular</span></span>
+<span id="cb249-2"><a href="modelos-arima-metodología-box-jenkins.html#cb249-2" tabindex="-1"></a><span class="cf">if</span> (d_regular <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb249-3"><a href="modelos-arima-metodología-box-jenkins.html#cb249-3" tabindex="-1"></a>  ipc_diff <span class="ot">&lt;-</span> <span class="fu">diff</span>(ipc_train, <span class="at">differences =</span> d_regular)</span>
+<span id="cb249-4"><a href="modelos-arima-metodología-box-jenkins.html#cb249-4" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb249-5"><a href="modelos-arima-metodología-box-jenkins.html#cb249-5" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;La serie ya es estacionaria, no requiere diferenciación regular.</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb249-6"><a href="modelos-arima-metodología-box-jenkins.html#cb249-6" tabindex="-1"></a>  ipc_diff <span class="ot">&lt;-</span> ipc_train</span>
+<span id="cb249-7"><a href="modelos-arima-metodología-box-jenkins.html#cb249-7" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## La serie ya es estacionaria, no requiere diferenciación regular.</code></pre>
+<div class="sourceCode" id="cb251"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb251-1"><a href="modelos-arima-metodología-box-jenkins.html#cb251-1" tabindex="-1"></a><span class="co"># Verificar estacionariedad después de diferenciar</span></span>
+<span id="cb251-2"><a href="modelos-arima-metodología-box-jenkins.html#cb251-2" tabindex="-1"></a>adf_diff <span class="ot">&lt;-</span> <span class="fu">adf.test</span>(ipc_diff)</span></code></pre></div>
+<pre><code>## Warning in adf.test(ipc_diff): p-value smaller than printed p-value</code></pre>
+<div class="sourceCode" id="cb253"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb253-1"><a href="modelos-arima-metodología-box-jenkins.html#cb253-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;=== Prueba ADF - Serie&quot;</span>, <span class="fu">ifelse</span>(d_regular <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="st">&quot;Diferenciada&quot;</span>, <span class="st">&quot;Original&quot;</span>), <span class="st">&quot;===</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## === Prueba ADF - Serie Original ===</code></pre>
+<div class="sourceCode" id="cb255"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb255-1"><a href="modelos-arima-metodología-box-jenkins.html#cb255-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  Dickey-Fuller =&quot;</span>, <span class="fu">round</span>(adf_diff<span class="sc">$</span>statistic, <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>##   Dickey-Fuller = -5.452</code></pre>
+<div class="sourceCode" id="cb257"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb257-1"><a href="modelos-arima-metodología-box-jenkins.html#cb257-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  p-valor =&quot;</span>, <span class="fu">round</span>(adf_diff<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>##   p-valor = 0.01</code></pre>
+<div class="sourceCode" id="cb259"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb259-1"><a href="modelos-arima-metodología-box-jenkins.html#cb259-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  Conclusión:&quot;</span>, <span class="fu">ifelse</span>(adf_diff<span class="sc">$</span>p.value <span class="sc">&lt;</span> <span class="fl">0.05</span>,</span>
+<span id="cb259-2"><a href="modelos-arima-metodología-box-jenkins.html#cb259-2" tabindex="-1"></a>    <span class="st">&quot;Estacionaria (p &lt; 0.05)&quot;</span>,</span>
+<span id="cb259-3"><a href="modelos-arima-metodología-box-jenkins.html#cb259-3" tabindex="-1"></a>    <span class="st">&quot;NO estacionaria&quot;</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>##   Conclusión: Estacionaria (p &lt; 0.05)</code></pre>
+<div class="sourceCode" id="cb261"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb261-1"><a href="modelos-arima-metodología-box-jenkins.html#cb261-1" tabindex="-1"></a><span class="fu">autoplot</span>(ipc_diff) <span class="sc">+</span></span>
+<span id="cb261-2"><a href="modelos-arima-metodología-box-jenkins.html#cb261-2" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
+<span id="cb261-3"><a href="modelos-arima-metodología-box-jenkins.html#cb261-3" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Serie Diferenciada del IPC Colombia&quot;</span>,</span>
+<span id="cb261-4"><a href="modelos-arima-metodología-box-jenkins.html#cb261-4" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Año&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Diferencia de variación mensual (pp)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb261-5"><a href="modelos-arima-metodología-box-jenkins.html#cb261-5" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:diff-plot"></span>
+<img src="analisis-ipc-colombia_files/figure-html/diff-plot-1.png" alt="Serie diferenciada del IPC. Tras la diferenciación, la serie oscila alrededor de cero sin tendencia visible, confirmando la estacionariedad." width="960" />
+<p class="caption">
+Figure 4.1: Serie diferenciada del IPC. Tras la diferenciación, la serie oscila alrededor de cero sin tendencia visible, confirmando la estacionariedad.
+</p>
+</div>
+</div>
+<div id="paso-3-identificación-de-parámetros-con-acf-y-pacf" class="section level2 hasAnchor" number="4.5">
+<h2><span class="header-section-number">4.5</span> Paso 3: Identificación de parámetros con ACF y PACF<a href="modelos-arima-metodología-box-jenkins.html#paso-3-identificación-de-parámetros-con-acf-y-pacf" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Las funciones de autocorrelación (ACF) y autocorrelación parcial (PACF) son la herramienta clave de la metodología Box-Jenkins para identificar los órdenes <span class="math inline">\(p\)</span> y <span class="math inline">\(q\)</span> del modelo:</p>
+<ul>
+<li>Si el <strong>ACF</strong> se trunca en el rezago <span class="math inline">\(q\)</span> y el PACF decae gradualmente → modelo MA(<span class="math inline">\(q\)</span>).</li>
+<li>Si el <strong>PACF</strong> se trunca en el rezago <span class="math inline">\(p\)</span> y el ACF decae gradualmente → modelo AR(<span class="math inline">\(p\)</span>).</li>
+<li>Si ambos decaen gradualmente → modelo ARMA(<span class="math inline">\(p,q\)</span>) mixto.</li>
+</ul>
+<div class="sourceCode" id="cb262"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb262-1"><a href="modelos-arima-metodología-box-jenkins.html#cb262-1" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
+<span id="cb262-2"><a href="modelos-arima-metodología-box-jenkins.html#cb262-2" tabindex="-1"></a><span class="fu">acf</span>(ipc_diff, <span class="at">lag.max =</span> <span class="dv">36</span>, <span class="at">main =</span> <span class="st">&quot;ACF - Serie Diferenciada del IPC&quot;</span>)</span>
+<span id="cb262-3"><a href="modelos-arima-metodología-box-jenkins.html#cb262-3" tabindex="-1"></a><span class="fu">pacf</span>(ipc_diff, <span class="at">lag.max =</span> <span class="dv">36</span>, <span class="at">main =</span> <span class="st">&quot;PACF - Serie Diferenciada del IPC&quot;</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:acf-pacf-diff"></span>
+<img src="analisis-ipc-colombia_files/figure-html/acf-pacf-diff-1.png" alt="ACF y PACF de la serie diferenciada. Las barras que superan las bandas azules (intervalo de confianza al 95%) indican rezagos significativos." width="960" />
+<p class="caption">
+Figure 4.2: ACF y PACF de la serie diferenciada. Las barras que superan las bandas azules (intervalo de confianza al 95%) indican rezagos significativos.
+</p>
+</div>
+<p><strong>Interpretación del ACF y PACF:</strong></p>
+<ul>
+<li>Observamos rezagos significativos en el ACF en los rezagos estacionales (12, 24), lo cual indica un componente estacional MA.</li>
+<li>El PACF muestra rezagos significativos en los primeros rezagos, sugiriendo un componente AR de orden bajo.</li>
+<li>Los picos en los rezagos múltiplos de 12 confirman la presencia de estacionalidad mensual, lo que sugiere que un modelo ARIMA estacional (SARIMA) será más apropiado.</li>
+</ul>
+</div>
+<div id="paso-4-ajuste-del-modelo-arima" class="section level2 hasAnchor" number="4.6">
+<h2><span class="header-section-number">4.6</span> Paso 4: Ajuste del modelo ARIMA<a href="modelos-arima-metodología-box-jenkins.html#paso-4-ajuste-del-modelo-arima" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="selección-automática-con-auto.arima" class="section level3 hasAnchor" number="4.6.1">
+<h3><span class="header-section-number">4.6.1</span> Selección automática con <code>auto.arima()</code><a href="modelos-arima-metodología-box-jenkins.html#selección-automática-con-auto.arima" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>La función <code>auto.arima()</code> del paquete <code>forecast</code> evalúa múltiples combinaciones de <span class="math inline">\((p,d,q)(P,D,Q)_{12}\)</span> y selecciona la que minimiza el criterio AICc:</p>
+<div class="sourceCode" id="cb263"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb263-1"><a href="modelos-arima-metodología-box-jenkins.html#cb263-1" tabindex="-1"></a><span class="co"># Selección automática del modelo ARIMA</span></span>
+<span id="cb263-2"><a href="modelos-arima-metodología-box-jenkins.html#cb263-2" tabindex="-1"></a>modelo_auto <span class="ot">&lt;-</span> <span class="fu">auto.arima</span>(ipc_train, </span>
+<span id="cb263-3"><a href="modelos-arima-metodología-box-jenkins.html#cb263-3" tabindex="-1"></a>                           <span class="at">seasonal =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb263-4"><a href="modelos-arima-metodología-box-jenkins.html#cb263-4" tabindex="-1"></a>                           <span class="at">stepwise =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb263-5"><a href="modelos-arima-metodología-box-jenkins.html#cb263-5" tabindex="-1"></a>                           <span class="at">approximation =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb263-6"><a href="modelos-arima-metodología-box-jenkins.html#cb263-6" tabindex="-1"></a>                           <span class="at">trace =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb263-7"><a href="modelos-arima-metodología-box-jenkins.html#cb263-7" tabindex="-1"></a></span>
+<span id="cb263-8"><a href="modelos-arima-metodología-box-jenkins.html#cb263-8" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;=== Modelo ARIMA Seleccionado ===</span><span class="sc">\n\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## === Modelo ARIMA Seleccionado ===</code></pre>
+<div class="sourceCode" id="cb265"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb265-1"><a href="modelos-arima-metodología-box-jenkins.html#cb265-1" tabindex="-1"></a><span class="fu">summary</span>(modelo_auto)</span></code></pre></div>
+<pre><code>## Series: ipc_train 
+## ARIMA(1,0,1)(2,1,0)[12] 
+## 
+## Coefficients:
+##          ar1      ma1     sar1     sar2
+##       0.7653  -0.2375  -0.5438  -0.3581
+## s.e.  0.0856   0.1403   0.0813   0.0769
+## 
+## sigma^2 = 0.04219:  log likelihood = 24.65
+## AIC=-39.3   AICc=-38.9   BIC=-24.05
+## 
+## Training set error measures:
+##                      ME      RMSE       MAE  MPE MAPE      MASE        ACF1
+## Training set 0.00193594 0.1953692 0.1452042 -Inf  Inf 0.6937782 0.004980781</code></pre>
+<div class="sourceCode" id="cb267"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb267-1"><a href="modelos-arima-metodología-box-jenkins.html#cb267-1" tabindex="-1"></a><span class="co"># Mostrar coeficientes con significancia</span></span>
+<span id="cb267-2"><a href="modelos-arima-metodología-box-jenkins.html#cb267-2" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">=== Coeficientes del Modelo ===</span><span class="sc">\n\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## === Coeficientes del Modelo ===</code></pre>
+<div class="sourceCode" id="cb269"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb269-1"><a href="modelos-arima-metodología-box-jenkins.html#cb269-1" tabindex="-1"></a>coef_test <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(modelo_auto)</span>
+<span id="cb269-2"><a href="modelos-arima-metodología-box-jenkins.html#cb269-2" tabindex="-1"></a><span class="fu">print</span>(coef_test)</span></code></pre></div>
+<pre><code>## 
+## z test of coefficients:
+## 
+##       Estimate Std. Error z value  Pr(&gt;|z|)    
+## ar1   0.765312   0.085566  8.9442 &lt; 2.2e-16 ***
+## ma1  -0.237451   0.140253 -1.6930   0.09045 .  
+## sar1 -0.543780   0.081294 -6.6891 2.246e-11 ***
+## sar2 -0.358119   0.076920 -4.6558 3.228e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p><strong>Interpretación del modelo:</strong> El modelo seleccionado por <code>auto.arima()</code> incorpora componentes autoregresivos (AR), de media móvil (MA) y posiblemente componentes estacionales. Cada coeficiente tiene un error estándar y un p-valor que indica su significancia estadística. Los coeficientes con p-valor &lt; 0.05 son estadísticamente significativos.</p>
+</div>
+<div id="modelos-candidatos-alternativos" class="section level3 hasAnchor" number="4.6.2">
+<h3><span class="header-section-number">4.6.2</span> Modelos candidatos alternativos<a href="modelos-arima-metodología-box-jenkins.html#modelos-candidatos-alternativos" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Para verificar que la selección automática es robusta, ajustamos manualmente algunos modelos candidatos y comparamos sus criterios de información:</p>
+<div class="sourceCode" id="cb271"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb271-1"><a href="modelos-arima-metodología-box-jenkins.html#cb271-1" tabindex="-1"></a><span class="co"># Modelo 1: ARIMA sin componente estacional</span></span>
+<span id="cb271-2"><a href="modelos-arima-metodología-box-jenkins.html#cb271-2" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> <span class="fu">Arima</span>(ipc_train, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb271-3"><a href="modelos-arima-metodología-box-jenkins.html#cb271-3" tabindex="-1"></a></span>
+<span id="cb271-4"><a href="modelos-arima-metodología-box-jenkins.html#cb271-4" tabindex="-1"></a><span class="co"># Modelo 2: ARIMA con estacionalidad básica</span></span>
+<span id="cb271-5"><a href="modelos-arima-metodología-box-jenkins.html#cb271-5" tabindex="-1"></a>m2 <span class="ot">&lt;-</span> <span class="fu">Arima</span>(ipc_train, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>), </span>
+<span id="cb271-6"><a href="modelos-arima-metodología-box-jenkins.html#cb271-6" tabindex="-1"></a>            <span class="at">seasonal =</span> <span class="fu">list</span>(<span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="at">period =</span> <span class="dv">12</span>))</span>
+<span id="cb271-7"><a href="modelos-arima-metodología-box-jenkins.html#cb271-7" tabindex="-1"></a></span>
+<span id="cb271-8"><a href="modelos-arima-metodología-box-jenkins.html#cb271-8" tabindex="-1"></a><span class="co"># Modelo 3: ARIMA con mayor orden</span></span>
+<span id="cb271-9"><a href="modelos-arima-metodología-box-jenkins.html#cb271-9" tabindex="-1"></a>m3 <span class="ot">&lt;-</span> <span class="fu">Arima</span>(ipc_train, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>), </span>
+<span id="cb271-10"><a href="modelos-arima-metodología-box-jenkins.html#cb271-10" tabindex="-1"></a>            <span class="at">seasonal =</span> <span class="fu">list</span>(<span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="at">period =</span> <span class="dv">12</span>))</span>
+<span id="cb271-11"><a href="modelos-arima-metodología-box-jenkins.html#cb271-11" tabindex="-1"></a></span>
+<span id="cb271-12"><a href="modelos-arima-metodología-box-jenkins.html#cb271-12" tabindex="-1"></a><span class="co"># Comparar AICc</span></span>
+<span id="cb271-13"><a href="modelos-arima-metodología-box-jenkins.html#cb271-13" tabindex="-1"></a>comparacion <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb271-14"><a href="modelos-arima-metodología-box-jenkins.html#cb271-14" tabindex="-1"></a>  <span class="at">Modelo =</span> <span class="fu">c</span>(<span class="fu">paste</span>(<span class="st">&quot;Auto:&quot;</span>, modelo_auto<span class="sc">$</span>arma[<span class="dv">1</span>], <span class="st">&quot;,&quot;</span>, modelo_auto<span class="sc">$</span>arma[<span class="dv">6</span>], <span class="st">&quot;,&quot;</span>, modelo_auto<span class="sc">$</span>arma[<span class="dv">2</span>]),</span>
+<span id="cb271-15"><a href="modelos-arima-metodología-box-jenkins.html#cb271-15" tabindex="-1"></a>             <span class="st">&quot;ARIMA(1,1,1)&quot;</span>,</span>
+<span id="cb271-16"><a href="modelos-arima-metodología-box-jenkins.html#cb271-16" tabindex="-1"></a>             <span class="st">&quot;ARIMA(1,1,1)(1,0,1)[12]&quot;</span>,</span>
+<span id="cb271-17"><a href="modelos-arima-metodología-box-jenkins.html#cb271-17" tabindex="-1"></a>             <span class="st">&quot;ARIMA(2,1,2)(1,0,1)[12]&quot;</span>),</span>
+<span id="cb271-18"><a href="modelos-arima-metodología-box-jenkins.html#cb271-18" tabindex="-1"></a>  <span class="at">AIC  =</span> <span class="fu">round</span>(<span class="fu">c</span>(modelo_auto<span class="sc">$</span>aic, m1<span class="sc">$</span>aic, m2<span class="sc">$</span>aic, m3<span class="sc">$</span>aic), <span class="dv">2</span>),</span>
+<span id="cb271-19"><a href="modelos-arima-metodología-box-jenkins.html#cb271-19" tabindex="-1"></a>  <span class="at">AICc =</span> <span class="fu">round</span>(<span class="fu">c</span>(modelo_auto<span class="sc">$</span>aicc, m1<span class="sc">$</span>aicc, m2<span class="sc">$</span>aicc, m3<span class="sc">$</span>aicc), <span class="dv">2</span>),</span>
+<span id="cb271-20"><a href="modelos-arima-metodología-box-jenkins.html#cb271-20" tabindex="-1"></a>  <span class="at">BIC  =</span> <span class="fu">round</span>(<span class="fu">c</span>(modelo_auto<span class="sc">$</span>bic, m1<span class="sc">$</span>bic, m2<span class="sc">$</span>bic, m3<span class="sc">$</span>bic), <span class="dv">2</span>)</span>
+<span id="cb271-21"><a href="modelos-arima-metodología-box-jenkins.html#cb271-21" tabindex="-1"></a>)</span>
+<span id="cb271-22"><a href="modelos-arima-metodología-box-jenkins.html#cb271-22" tabindex="-1"></a></span>
+<span id="cb271-23"><a href="modelos-arima-metodología-box-jenkins.html#cb271-23" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(comparacion,</span>
+<span id="cb271-24"><a href="modelos-arima-metodología-box-jenkins.html#cb271-24" tabindex="-1"></a>             <span class="at">caption =</span> <span class="st">&quot;Comparación de criterios de información entre modelos candidatos&quot;</span>,</span>
+<span id="cb271-25"><a href="modelos-arima-metodología-box-jenkins.html#cb271-25" tabindex="-1"></a>             <span class="at">align =</span> <span class="st">&quot;lccc&quot;</span>)</span></code></pre></div>
+<table>
+<caption><span id="tab:modelos-candidatos">Table 4.1: </span>Comparación de criterios de información entre modelos candidatos</caption>
+<thead>
+<tr class="header">
+<th align="left">Modelo</th>
+<th align="center">AIC</th>
+<th align="center">AICc</th>
+<th align="center">BIC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Auto: 1 , 0 , 1</td>
+<td align="center">-39.30</td>
+<td align="center">-38.90</td>
+<td align="center">-24.05</td>
+</tr>
+<tr class="even">
+<td align="left">ARIMA(1,1,1)</td>
+<td align="center">-4.11</td>
+<td align="center">-3.96</td>
+<td align="center">5.24</td>
+</tr>
+<tr class="odd">
+<td align="left">ARIMA(1,1,1)(1,0,1)[12]</td>
+<td align="center">-68.02</td>
+<td align="center">-67.64</td>
+<td align="center">-52.43</td>
+</tr>
+<tr class="even">
+<td align="left">ARIMA(2,1,2)(1,0,1)[12]</td>
+<td align="center">-64.79</td>
+<td align="center">-64.08</td>
+<td align="center">-42.96</td>
+</tr>
+</tbody>
+</table>
+<p>El modelo con menor AICc es el preferido, ya que balancea bondad de ajuste con parsimonia (penaliza la complejidad).</p>
+</div>
+</div>
+<div id="paso-5-verificación-de-supuestos-análisis-de-residuos" class="section level2 hasAnchor" number="4.7">
+<h2><span class="header-section-number">4.7</span> Paso 5: Verificación de supuestos (Análisis de residuos)<a href="modelos-arima-metodología-box-jenkins.html#paso-5-verificación-de-supuestos-análisis-de-residuos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Un modelo ARIMA bien ajustado debe producir residuos que se comporten como <strong>ruido blanco</strong>: sin autocorrelación, con media cero y varianza constante. Verificamos estos supuestos:</p>
+<div class="sourceCode" id="cb272"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb272-1"><a href="modelos-arima-metodología-box-jenkins.html#cb272-1" tabindex="-1"></a><span class="fu">checkresiduals</span>(modelo_auto)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:residuos-diagnostico"></span>
+<img src="analisis-ipc-colombia_files/figure-html/residuos-diagnostico-1.png" alt="Diagnóstico de residuos del modelo ARIMA: serie temporal, ACF e histograma. Los residuos deben parecer ruido blanco." width="960" />
+<p class="caption">
+Figure 4.3: Diagnóstico de residuos del modelo ARIMA: serie temporal, ACF e histograma. Los residuos deben parecer ruido blanco.
+</p>
+</div>
+<pre><code>## 
+##  Ljung-Box test
+## 
+## data:  Residuals from ARIMA(1,0,1)(2,1,0)[12]
+## Q* = 53.216, df = 20, p-value = 7.553e-05
+## 
+## Model df: 4.   Total lags used: 24</code></pre>
+<div class="sourceCode" id="cb274"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb274-1"><a href="modelos-arima-metodología-box-jenkins.html#cb274-1" tabindex="-1"></a><span class="co"># Prueba de Ljung-Box</span></span>
+<span id="cb274-2"><a href="modelos-arima-metodología-box-jenkins.html#cb274-2" tabindex="-1"></a>residuales <span class="ot">&lt;-</span> <span class="fu">residuals</span>(modelo_auto)</span>
+<span id="cb274-3"><a href="modelos-arima-metodología-box-jenkins.html#cb274-3" tabindex="-1"></a></span>
+<span id="cb274-4"><a href="modelos-arima-metodología-box-jenkins.html#cb274-4" tabindex="-1"></a>lb_test <span class="ot">&lt;-</span> <span class="fu">Box.test</span>(residuales, <span class="at">lag =</span> <span class="dv">24</span>, <span class="at">type =</span> <span class="st">&quot;Ljung-Box&quot;</span>)</span>
+<span id="cb274-5"><a href="modelos-arima-metodología-box-jenkins.html#cb274-5" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;=== Prueba de Ljung-Box ===</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## === Prueba de Ljung-Box ===</code></pre>
+<div class="sourceCode" id="cb276"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb276-1"><a href="modelos-arima-metodología-box-jenkins.html#cb276-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  H0: Los residuos son ruido blanco (no hay autocorrelación)</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>##   H0: Los residuos son ruido blanco (no hay autocorrelación)</code></pre>
+<div class="sourceCode" id="cb278"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb278-1"><a href="modelos-arima-metodología-box-jenkins.html#cb278-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  Estadístico X²:&quot;</span>, <span class="fu">round</span>(lb_test<span class="sc">$</span>statistic, <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>##   Estadístico X²: 53.2162</code></pre>
+<div class="sourceCode" id="cb280"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb280-1"><a href="modelos-arima-metodología-box-jenkins.html#cb280-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  p-valor:&quot;</span>, <span class="fu">round</span>(lb_test<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>##   p-valor: 5e-04</code></pre>
+<div class="sourceCode" id="cb282"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb282-1"><a href="modelos-arima-metodología-box-jenkins.html#cb282-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  Conclusión:&quot;</span>, <span class="fu">ifelse</span>(lb_test<span class="sc">$</span>p.value <span class="sc">&gt;</span> <span class="fl">0.05</span>,</span>
+<span id="cb282-2"><a href="modelos-arima-metodología-box-jenkins.html#cb282-2" tabindex="-1"></a>    <span class="st">&quot;No se rechaza H0: residuos sin autocorrelación significativa. ✓&quot;</span>,</span>
+<span id="cb282-3"><a href="modelos-arima-metodología-box-jenkins.html#cb282-3" tabindex="-1"></a>    <span class="st">&quot;Se rechaza H0: existe autocorrelación residual. ✗&quot;</span>), <span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>##   Conclusión: Se rechaza H0: existe autocorrelación residual. ✗</code></pre>
+<div class="sourceCode" id="cb284"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb284-1"><a href="modelos-arima-metodología-box-jenkins.html#cb284-1" tabindex="-1"></a><span class="co"># Prueba de normalidad</span></span>
+<span id="cb284-2"><a href="modelos-arima-metodología-box-jenkins.html#cb284-2" tabindex="-1"></a>sw_test <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(residuales)</span>
+<span id="cb284-3"><a href="modelos-arima-metodología-box-jenkins.html#cb284-3" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;=== Prueba de Shapiro-Wilk ===</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## === Prueba de Shapiro-Wilk ===</code></pre>
+<div class="sourceCode" id="cb286"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb286-1"><a href="modelos-arima-metodología-box-jenkins.html#cb286-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  H0: Los residuos siguen distribución normal</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>##   H0: Los residuos siguen distribución normal</code></pre>
+<div class="sourceCode" id="cb288"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb288-1"><a href="modelos-arima-metodología-box-jenkins.html#cb288-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  Estadístico W:&quot;</span>, <span class="fu">round</span>(sw_test<span class="sc">$</span>statistic, <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>##   Estadístico W: 0.9782</code></pre>
+<div class="sourceCode" id="cb290"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb290-1"><a href="modelos-arima-metodología-box-jenkins.html#cb290-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  p-valor:&quot;</span>, <span class="fu">round</span>(sw_test<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>##   p-valor: 0.0095</code></pre>
+<div class="sourceCode" id="cb292"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb292-1"><a href="modelos-arima-metodología-box-jenkins.html#cb292-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  Conclusión:&quot;</span>, <span class="fu">ifelse</span>(sw_test<span class="sc">$</span>p.value <span class="sc">&gt;</span> <span class="fl">0.05</span>,</span>
+<span id="cb292-2"><a href="modelos-arima-metodología-box-jenkins.html#cb292-2" tabindex="-1"></a>    <span class="st">&quot;No se rechaza H0: residuos normales. ✓&quot;</span>,</span>
+<span id="cb292-3"><a href="modelos-arima-metodología-box-jenkins.html#cb292-3" tabindex="-1"></a>    <span class="st">&quot;Se rechaza H0: residuos no normales. ✗</span><span class="sc">\n</span><span class="st">  (Nota: la no normalidad no invalida el modelo,</span><span class="sc">\n</span><span class="st">   pero afecta la precisión de los intervalos de confianza.)&quot;</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>##   Conclusión: Se rechaza H0: residuos no normales. ✗
+##   (Nota: la no normalidad no invalida el modelo,
+##    pero afecta la precisión de los intervalos de confianza.)</code></pre>
+<div class="sourceCode" id="cb294"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb294-1"><a href="modelos-arima-metodología-box-jenkins.html#cb294-1" tabindex="-1"></a><span class="fu">qqnorm</span>(residuales, <span class="at">main =</span> <span class="st">&quot;Q-Q Plot de Residuos del Modelo ARIMA&quot;</span>)</span>
+<span id="cb294-2"><a href="modelos-arima-metodología-box-jenkins.html#cb294-2" tabindex="-1"></a><span class="fu">qqline</span>(residuales, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:residuos-adicional"></span>
+<img src="analisis-ipc-colombia_files/figure-html/residuos-adicional-1.png" alt="Gráfico Q-Q de los residuos del modelo ARIMA. Los puntos deben seguir la línea diagonal si los residuos son normales." width="960" />
+<p class="caption">
+Figure 4.4: Gráfico Q-Q de los residuos del modelo ARIMA. Los puntos deben seguir la línea diagonal si los residuos son normales.
+</p>
+</div>
+</div>
+<div id="detección-de-puntos-de-cambio-y-valores-atípicos" class="section level2 hasAnchor" number="4.8">
+<h2><span class="header-section-number">4.8</span> Detección de puntos de cambio y valores atípicos<a href="modelos-arima-metodología-box-jenkins.html#detección-de-puntos-de-cambio-y-valores-atípicos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>La serie del IPC experimentó cambios estructurales importantes, especialmente durante el período inflacionario 2021-2023. Identificamos estos puntos de cambio y valores atípicos:</p>
+<div class="sourceCode" id="cb295"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb295-1"><a href="modelos-arima-metodología-box-jenkins.html#cb295-1" tabindex="-1"></a><span class="fu">library</span>(changepoint)</span>
+<span id="cb295-2"><a href="modelos-arima-metodología-box-jenkins.html#cb295-2" tabindex="-1"></a></span>
+<span id="cb295-3"><a href="modelos-arima-metodología-box-jenkins.html#cb295-3" tabindex="-1"></a><span class="co"># Detectar puntos de cambio en la media</span></span>
+<span id="cb295-4"><a href="modelos-arima-metodología-box-jenkins.html#cb295-4" tabindex="-1"></a>mval <span class="ot">&lt;-</span> <span class="fu">cpt.mean</span>(ipc_train, <span class="at">method =</span> <span class="st">&quot;PELT&quot;</span>)</span>
+<span id="cb295-5"><a href="modelos-arima-metodología-box-jenkins.html#cb295-5" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;=== Puntos de Cambio en la Media ===</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## === Puntos de Cambio en la Media ===</code></pre>
+<div class="sourceCode" id="cb297"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb297-1"><a href="modelos-arima-metodología-box-jenkins.html#cb297-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  Posiciones:&quot;</span>, <span class="fu">cpts</span>(mval), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>##   Posiciones:</code></pre>
+<div class="sourceCode" id="cb299"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb299-1"><a href="modelos-arima-metodología-box-jenkins.html#cb299-1" tabindex="-1"></a><span class="co"># Convertir posiciones a fechas aproximadas</span></span>
+<span id="cb299-2"><a href="modelos-arima-metodología-box-jenkins.html#cb299-2" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(<span class="fu">cpts</span>(mval))) {</span>
+<span id="cb299-3"><a href="modelos-arima-metodología-box-jenkins.html#cb299-3" tabindex="-1"></a>  pos <span class="ot">&lt;-</span> <span class="fu">cpts</span>(mval)[i]</span>
+<span id="cb299-4"><a href="modelos-arima-metodología-box-jenkins.html#cb299-4" tabindex="-1"></a>  anio <span class="ot">&lt;-</span> <span class="dv">2010</span> <span class="sc">+</span> (pos <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">%/%</span> <span class="dv">12</span></span>
+<span id="cb299-5"><a href="modelos-arima-metodología-box-jenkins.html#cb299-5" tabindex="-1"></a>  mes_num <span class="ot">&lt;-</span> ((pos <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">%%</span> <span class="dv">12</span>) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb299-6"><a href="modelos-arima-metodología-box-jenkins.html#cb299-6" tabindex="-1"></a>  meses_nombre <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Ene&quot;</span>,<span class="st">&quot;Feb&quot;</span>,<span class="st">&quot;Mar&quot;</span>,<span class="st">&quot;Abr&quot;</span>,<span class="st">&quot;May&quot;</span>,<span class="st">&quot;Jun&quot;</span>,</span>
+<span id="cb299-7"><a href="modelos-arima-metodología-box-jenkins.html#cb299-7" tabindex="-1"></a>                     <span class="st">&quot;Jul&quot;</span>,<span class="st">&quot;Ago&quot;</span>,<span class="st">&quot;Sep&quot;</span>,<span class="st">&quot;Oct&quot;</span>,<span class="st">&quot;Nov&quot;</span>,<span class="st">&quot;Dic&quot;</span>)</span>
+<span id="cb299-8"><a href="modelos-arima-metodología-box-jenkins.html#cb299-8" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;  Punto&quot;</span>, i, <span class="st">&quot;:&quot;</span>, meses_nombre[mes_num], anio, <span class="st">&quot;(observación&quot;</span>, pos, <span class="st">&quot;)</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb299-9"><a href="modelos-arima-metodología-box-jenkins.html#cb299-9" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb300"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb300-1"><a href="modelos-arima-metodología-box-jenkins.html#cb300-1" tabindex="-1"></a><span class="fu">plot</span>(mval, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;Observación&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Variación mensual (%)&quot;</span>,</span>
+<span id="cb300-2"><a href="modelos-arima-metodología-box-jenkins.html#cb300-2" tabindex="-1"></a>     <span class="at">cpt.col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">cpt.width =</span> <span class="dv">3</span>)</span>
+<span id="cb300-3"><a href="modelos-arima-metodología-box-jenkins.html#cb300-3" tabindex="-1"></a><span class="fu">title</span>(<span class="st">&quot;Puntos de Cambio en la Media - IPC Colombia&quot;</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:changepoint-plot"></span>
+<img src="analisis-ipc-colombia_files/figure-html/changepoint-plot-1.png" alt="Detección de puntos de cambio en la media de la serie del IPC. Las líneas verticales indican cambios estructurales identificados." width="960" />
+<p class="caption">
+Figure 4.5: Detección de puntos de cambio en la media de la serie del IPC. Las líneas verticales indican cambios estructurales identificados.
+</p>
+</div>
+<p><strong>Interpretación:</strong> Los puntos de cambio detectados coinciden con eventos macroeconómicos relevantes en Colombia. El cambio más notable ocurre alrededor de 2021-2022, cuando la inflación se aceleró significativamente debido a disrupciones en cadenas de suministro, aumento de precios de commodities y presiones de demanda post-pandemia.</p>
+</div>
+<div id="paso-6-pronóstico-con-el-modelo-arima" class="section level2 hasAnchor" number="4.9">
+<h2><span class="header-section-number">4.9</span> Paso 6: Pronóstico con el modelo ARIMA<a href="modelos-arima-metodología-box-jenkins.html#paso-6-pronóstico-con-el-modelo-arima" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="pronóstico-sobre-el-conjunto-de-prueba" class="section level3 hasAnchor" number="4.9.1">
+<h3><span class="header-section-number">4.9.1</span> Pronóstico sobre el conjunto de prueba<a href="modelos-arima-metodología-box-jenkins.html#pronóstico-sobre-el-conjunto-de-prueba" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Evaluamos la capacidad predictiva del modelo sobre el período 2024-2025:</p>
+<div class="sourceCode" id="cb301"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb301-1"><a href="modelos-arima-metodología-box-jenkins.html#cb301-1" tabindex="-1"></a><span class="co"># Pronóstico para el período de prueba</span></span>
+<span id="cb301-2"><a href="modelos-arima-metodología-box-jenkins.html#cb301-2" tabindex="-1"></a>arima_forecast_test <span class="ot">&lt;-</span> <span class="fu">forecast</span>(modelo_auto, <span class="at">h =</span> <span class="dv">24</span>)</span>
+<span id="cb301-3"><a href="modelos-arima-metodología-box-jenkins.html#cb301-3" tabindex="-1"></a></span>
+<span id="cb301-4"><a href="modelos-arima-metodología-box-jenkins.html#cb301-4" tabindex="-1"></a><span class="fu">autoplot</span>(arima_forecast_test) <span class="sc">+</span></span>
+<span id="cb301-5"><a href="modelos-arima-metodología-box-jenkins.html#cb301-5" tabindex="-1"></a>  <span class="fu">autolayer</span>(ipc_test, <span class="at">series =</span> <span class="st">&quot;Datos reales&quot;</span>) <span class="sc">+</span></span>
+<span id="cb301-6"><a href="modelos-arima-metodología-box-jenkins.html#cb301-6" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">&quot;Pronóstico&quot;</span>, modelo_auto, <span class="st">&quot;- IPC Colombia&quot;</span>),</span>
+<span id="cb301-7"><a href="modelos-arima-metodología-box-jenkins.html#cb301-7" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Entrenamiento: 2010-2023 | Prueba: 2024-2025&quot;</span>,</span>
+<span id="cb301-8"><a href="modelos-arima-metodología-box-jenkins.html#cb301-8" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Año&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Variación mensual (%)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb301-9"><a href="modelos-arima-metodología-box-jenkins.html#cb301-9" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb301-10"><a href="modelos-arima-metodología-box-jenkins.html#cb301-10" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:arima-forecast-test"></span>
+<img src="analisis-ipc-colombia_files/figure-html/arima-forecast-test-1.png" alt="Pronóstico ARIMA vs. datos reales del período de prueba (2024-2025), con intervalos de confianza al 80% y 95%." width="960" />
+<p class="caption">
+Figure 4.6: Pronóstico ARIMA vs. datos reales del período de prueba (2024-2025), con intervalos de confianza al 80% y 95%.
+</p>
+</div>
+</div>
+<div id="métricas-de-error" class="section level3 hasAnchor" number="4.9.2">
+<h3><span class="header-section-number">4.9.2</span> Métricas de error<a href="modelos-arima-metodología-box-jenkins.html#métricas-de-error" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb302"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb302-1"><a href="modelos-arima-metodología-box-jenkins.html#cb302-1" tabindex="-1"></a><span class="co"># Calcular métricas de error</span></span>
+<span id="cb302-2"><a href="modelos-arima-metodología-box-jenkins.html#cb302-2" tabindex="-1"></a>error <span class="ot">&lt;-</span> ipc_test <span class="sc">-</span> arima_forecast_test<span class="sc">$</span>mean</span>
+<span id="cb302-3"><a href="modelos-arima-metodología-box-jenkins.html#cb302-3" tabindex="-1"></a>mae  <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(error))</span>
+<span id="cb302-4"><a href="modelos-arima-metodología-box-jenkins.html#cb302-4" tabindex="-1"></a>rmse <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>(error<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb302-5"><a href="modelos-arima-metodología-box-jenkins.html#cb302-5" tabindex="-1"></a>no_cero <span class="ot">&lt;-</span> <span class="fu">which</span>(ipc_test <span class="sc">!=</span> <span class="dv">0</span>)</span>
+<span id="cb302-6"><a href="modelos-arima-metodología-box-jenkins.html#cb302-6" tabindex="-1"></a>mape <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(error[no_cero] <span class="sc">/</span> ipc_test[no_cero])) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb302-7"><a href="modelos-arima-metodología-box-jenkins.html#cb302-7" tabindex="-1"></a></span>
+<span id="cb302-8"><a href="modelos-arima-metodología-box-jenkins.html#cb302-8" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;=== Métricas de Error - Conjunto de Prueba ===</span><span class="sc">\n\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## === Métricas de Error - Conjunto de Prueba ===</code></pre>
+<div class="sourceCode" id="cb304"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb304-1"><a href="modelos-arima-metodología-box-jenkins.html#cb304-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  MAE  =&quot;</span>, <span class="fu">round</span>(mae, <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>##   MAE  = 0.5212</code></pre>
+<div class="sourceCode" id="cb306"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb306-1"><a href="modelos-arima-metodología-box-jenkins.html#cb306-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  RMSE =&quot;</span>, <span class="fu">round</span>(rmse, <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>##   RMSE = 0.6652</code></pre>
+<div class="sourceCode" id="cb308"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb308-1"><a href="modelos-arima-metodología-box-jenkins.html#cb308-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  MAPE =&quot;</span>, <span class="fu">round</span>(mape, <span class="dv">2</span>), <span class="st">&quot;%</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>##   MAPE = 61.3 %</code></pre>
+</div>
+</div>
+<div id="comparación-arima-vs.-holt-winter" class="section level2 hasAnchor" number="4.10">
+<h2><span class="header-section-number">4.10</span> Comparación: ARIMA vs. Holt-Winter<a href="modelos-arima-metodología-box-jenkins.html#comparación-arima-vs.-holt-winter" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Comparamos el desempeño del modelo ARIMA con los modelos de suavizamiento exponencial del capítulo anterior:</p>
+<div class="sourceCode" id="cb310"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb310-1"><a href="modelos-arima-metodología-box-jenkins.html#cb310-1" tabindex="-1"></a><span class="co"># Reajustar Holt-Winter para comparación</span></span>
+<span id="cb310-2"><a href="modelos-arima-metodología-box-jenkins.html#cb310-2" tabindex="-1"></a>hw_add <span class="ot">&lt;-</span> <span class="fu">hw</span>(ipc_train, <span class="at">seasonal =</span> <span class="st">&quot;additive&quot;</span>, <span class="at">h =</span> <span class="dv">24</span>)</span>
+<span id="cb310-3"><a href="modelos-arima-metodología-box-jenkins.html#cb310-3" tabindex="-1"></a>hw_damped <span class="ot">&lt;-</span> <span class="fu">hw</span>(ipc_train, <span class="at">seasonal =</span> <span class="st">&quot;additive&quot;</span>, <span class="at">damped =</span> <span class="cn">TRUE</span>, <span class="at">h =</span> <span class="dv">24</span>)</span>
+<span id="cb310-4"><a href="modelos-arima-metodología-box-jenkins.html#cb310-4" tabindex="-1"></a>ets_auto <span class="ot">&lt;-</span> <span class="fu">ets</span>(ipc_train)</span>
+<span id="cb310-5"><a href="modelos-arima-metodología-box-jenkins.html#cb310-5" tabindex="-1"></a>ets_fc <span class="ot">&lt;-</span> <span class="fu">forecast</span>(ets_auto, <span class="at">h =</span> <span class="dv">24</span>)</span>
+<span id="cb310-6"><a href="modelos-arima-metodología-box-jenkins.html#cb310-6" tabindex="-1"></a></span>
+<span id="cb310-7"><a href="modelos-arima-metodología-box-jenkins.html#cb310-7" tabindex="-1"></a><span class="co"># Función de métricas</span></span>
+<span id="cb310-8"><a href="modelos-arima-metodología-box-jenkins.html#cb310-8" tabindex="-1"></a>calc_met <span class="ot">&lt;-</span> <span class="cf">function</span>(real, pred, nombre) {</span>
+<span id="cb310-9"><a href="modelos-arima-metodología-box-jenkins.html#cb310-9" tabindex="-1"></a>  e <span class="ot">&lt;-</span> real <span class="sc">-</span> pred</span>
+<span id="cb310-10"><a href="modelos-arima-metodología-box-jenkins.html#cb310-10" tabindex="-1"></a>  no_z <span class="ot">&lt;-</span> <span class="fu">which</span>(real <span class="sc">!=</span> <span class="dv">0</span>)</span>
+<span id="cb310-11"><a href="modelos-arima-metodología-box-jenkins.html#cb310-11" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
+<span id="cb310-12"><a href="modelos-arima-metodología-box-jenkins.html#cb310-12" tabindex="-1"></a>    <span class="at">Modelo =</span> nombre,</span>
+<span id="cb310-13"><a href="modelos-arima-metodología-box-jenkins.html#cb310-13" tabindex="-1"></a>    <span class="at">MAE  =</span> <span class="fu">round</span>(<span class="fu">mean</span>(<span class="fu">abs</span>(e)), <span class="dv">4</span>),</span>
+<span id="cb310-14"><a href="modelos-arima-metodología-box-jenkins.html#cb310-14" tabindex="-1"></a>    <span class="at">RMSE =</span> <span class="fu">round</span>(<span class="fu">sqrt</span>(<span class="fu">mean</span>(e<span class="sc">^</span><span class="dv">2</span>)), <span class="dv">4</span>),</span>
+<span id="cb310-15"><a href="modelos-arima-metodología-box-jenkins.html#cb310-15" tabindex="-1"></a>    <span class="at">MAPE =</span> <span class="fu">round</span>(<span class="fu">mean</span>(<span class="fu">abs</span>(e[no_z] <span class="sc">/</span> real[no_z])) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>)</span>
+<span id="cb310-16"><a href="modelos-arima-metodología-box-jenkins.html#cb310-16" tabindex="-1"></a>  )</span>
+<span id="cb310-17"><a href="modelos-arima-metodología-box-jenkins.html#cb310-17" tabindex="-1"></a>}</span>
+<span id="cb310-18"><a href="modelos-arima-metodología-box-jenkins.html#cb310-18" tabindex="-1"></a></span>
+<span id="cb310-19"><a href="modelos-arima-metodología-box-jenkins.html#cb310-19" tabindex="-1"></a>comp <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
+<span id="cb310-20"><a href="modelos-arima-metodología-box-jenkins.html#cb310-20" tabindex="-1"></a>  <span class="fu">calc_met</span>(ipc_test, hw_add<span class="sc">$</span>mean, <span class="st">&quot;HW Aditivo&quot;</span>),</span>
+<span id="cb310-21"><a href="modelos-arima-metodología-box-jenkins.html#cb310-21" tabindex="-1"></a>  <span class="fu">calc_met</span>(ipc_test, hw_damped<span class="sc">$</span>mean, <span class="st">&quot;HW Aditivo Amortiguado&quot;</span>),</span>
+<span id="cb310-22"><a href="modelos-arima-metodología-box-jenkins.html#cb310-22" tabindex="-1"></a>  <span class="fu">calc_met</span>(ipc_test, ets_fc<span class="sc">$</span>mean, <span class="fu">paste</span>(<span class="st">&quot;ETS&quot;</span>, ets_auto<span class="sc">$</span>method)),</span>
+<span id="cb310-23"><a href="modelos-arima-metodología-box-jenkins.html#cb310-23" tabindex="-1"></a>  <span class="fu">calc_met</span>(ipc_test, arima_forecast_test<span class="sc">$</span>mean, <span class="fu">paste</span>(<span class="st">&quot;ARIMA&quot;</span>, </span>
+<span id="cb310-24"><a href="modelos-arima-metodología-box-jenkins.html#cb310-24" tabindex="-1"></a>           <span class="fu">paste0</span>(<span class="st">&quot;(&quot;</span>, <span class="fu">paste</span>(modelo_auto<span class="sc">$</span>arma[<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">6</span>,<span class="dv">2</span>)], <span class="at">collapse=</span><span class="st">&quot;,&quot;</span>), <span class="st">&quot;)&quot;</span>)))</span>
+<span id="cb310-25"><a href="modelos-arima-metodología-box-jenkins.html#cb310-25" tabindex="-1"></a>)</span>
+<span id="cb310-26"><a href="modelos-arima-metodología-box-jenkins.html#cb310-26" tabindex="-1"></a></span>
+<span id="cb310-27"><a href="modelos-arima-metodología-box-jenkins.html#cb310-27" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(comp,</span>
+<span id="cb310-28"><a href="modelos-arima-metodología-box-jenkins.html#cb310-28" tabindex="-1"></a>             <span class="at">caption =</span> <span class="st">&quot;Comparación de modelos: Holt-Winter vs. ARIMA en el conjunto de prueba&quot;</span>,</span>
+<span id="cb310-29"><a href="modelos-arima-metodología-box-jenkins.html#cb310-29" tabindex="-1"></a>             <span class="at">align =</span> <span class="st">&quot;lccc&quot;</span>)</span></code></pre></div>
+<table>
+<caption><span id="tab:comparacion-modelos">Table 4.2: </span>Comparación de modelos: Holt-Winter vs. ARIMA en el conjunto de prueba</caption>
+<thead>
+<tr class="header">
+<th align="left">Modelo</th>
+<th align="center">MAE</th>
+<th align="center">RMSE</th>
+<th align="center">MAPE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">HW Aditivo</td>
+<td align="center">0.5189</td>
+<td align="center">0.6442</td>
+<td align="center">62.09</td>
+</tr>
+<tr class="even">
+<td align="left">HW Aditivo Amortiguado</td>
+<td align="center">0.4495</td>
+<td align="center">0.5774</td>
+<td align="center">53.98</td>
+</tr>
+<tr class="odd">
+<td align="left">ETS ETS(A,N,A)</td>
+<td align="center">0.4490</td>
+<td align="center">0.5782</td>
+<td align="center">53.86</td>
+</tr>
+<tr class="even">
+<td align="left">ARIMA (1,0,1)</td>
+<td align="center">0.5212</td>
+<td align="center">0.6652</td>
+<td align="center">61.30</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb311"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb311-1"><a href="modelos-arima-metodología-box-jenkins.html#cb311-1" tabindex="-1"></a><span class="fu">autoplot</span>(<span class="fu">window</span>(ipc_ts, <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">2022</span>, <span class="dv">1</span>))) <span class="sc">+</span></span>
+<span id="cb311-2"><a href="modelos-arima-metodología-box-jenkins.html#cb311-2" tabindex="-1"></a>  <span class="fu">autolayer</span>(arima_forecast_test, <span class="at">series =</span> <span class="st">&quot;ARIMA&quot;</span>, <span class="at">PI =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb311-3"><a href="modelos-arima-metodología-box-jenkins.html#cb311-3" tabindex="-1"></a>  <span class="fu">autolayer</span>(hw_add, <span class="at">series =</span> <span class="st">&quot;HW Aditivo&quot;</span>, <span class="at">PI =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb311-4"><a href="modelos-arima-metodología-box-jenkins.html#cb311-4" tabindex="-1"></a>  <span class="fu">autolayer</span>(hw_damped, <span class="at">series =</span> <span class="st">&quot;HW Amortiguado&quot;</span>, <span class="at">PI =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb311-5"><a href="modelos-arima-metodología-box-jenkins.html#cb311-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Comparación de Pronósticos - IPC Colombia&quot;</span>,</span>
+<span id="cb311-6"><a href="modelos-arima-metodología-box-jenkins.html#cb311-6" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Año&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Variación mensual (%)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb311-7"><a href="modelos-arima-metodología-box-jenkins.html#cb311-7" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb311-8"><a href="modelos-arima-metodología-box-jenkins.html#cb311-8" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:comparacion-plot"></span>
+<img src="analisis-ipc-colombia_files/figure-html/comparacion-plot-1.png" alt="Comparación visual de pronósticos: ARIMA vs. Holt-Winter vs. datos reales." width="960" />
+<p class="caption">
+Figure 4.7: Comparación visual de pronósticos: ARIMA vs. Holt-Winter vs. datos reales.
+</p>
+</div>
+<div id="pronóstico-final-para-2026" class="section level3 hasAnchor" number="4.10.1">
+<h3><span class="header-section-number">4.10.1</span> Pronóstico final para 2026<a href="modelos-arima-metodología-box-jenkins.html#pronóstico-final-para-2026" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Reajustamos el modelo ARIMA con toda la serie disponible (2010-2025) para generar el pronóstico final:</p>
+<div class="sourceCode" id="cb312"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb312-1"><a href="modelos-arima-metodología-box-jenkins.html#cb312-1" tabindex="-1"></a><span class="co"># Reajustar con toda la serie</span></span>
+<span id="cb312-2"><a href="modelos-arima-metodología-box-jenkins.html#cb312-2" tabindex="-1"></a>modelo_final <span class="ot">&lt;-</span> <span class="fu">auto.arima</span>(ipc_ts, <span class="at">seasonal =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb312-3"><a href="modelos-arima-metodología-box-jenkins.html#cb312-3" tabindex="-1"></a>                            <span class="at">stepwise =</span> <span class="cn">FALSE</span>, <span class="at">approximation =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb312-4"><a href="modelos-arima-metodología-box-jenkins.html#cb312-4" tabindex="-1"></a></span>
+<span id="cb312-5"><a href="modelos-arima-metodología-box-jenkins.html#cb312-5" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;=== Modelo Final (toda la serie) ===</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## === Modelo Final (toda la serie) ===</code></pre>
+<div class="sourceCode" id="cb314"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb314-1"><a href="modelos-arima-metodología-box-jenkins.html#cb314-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  &quot;</span>, modelo_final<span class="sc">$</span>method, <span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb315"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb315-1"><a href="modelos-arima-metodología-box-jenkins.html#cb315-1" tabindex="-1"></a><span class="co"># Pronóstico 12 meses</span></span>
+<span id="cb315-2"><a href="modelos-arima-metodología-box-jenkins.html#cb315-2" tabindex="-1"></a>arima_final <span class="ot">&lt;-</span> <span class="fu">forecast</span>(modelo_final, <span class="at">h =</span> <span class="dv">12</span>)</span>
+<span id="cb315-3"><a href="modelos-arima-metodología-box-jenkins.html#cb315-3" tabindex="-1"></a></span>
+<span id="cb315-4"><a href="modelos-arima-metodología-box-jenkins.html#cb315-4" tabindex="-1"></a>meses <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Ene&quot;</span>, <span class="st">&quot;Feb&quot;</span>, <span class="st">&quot;Mar&quot;</span>, <span class="st">&quot;Abr&quot;</span>, <span class="st">&quot;May&quot;</span>, <span class="st">&quot;Jun&quot;</span>,</span>
+<span id="cb315-5"><a href="modelos-arima-metodología-box-jenkins.html#cb315-5" tabindex="-1"></a>           <span class="st">&quot;Jul&quot;</span>, <span class="st">&quot;Ago&quot;</span>, <span class="st">&quot;Sep&quot;</span>, <span class="st">&quot;Oct&quot;</span>, <span class="st">&quot;Nov&quot;</span>, <span class="st">&quot;Dic&quot;</span>)</span>
+<span id="cb315-6"><a href="modelos-arima-metodología-box-jenkins.html#cb315-6" tabindex="-1"></a></span>
+<span id="cb315-7"><a href="modelos-arima-metodología-box-jenkins.html#cb315-7" tabindex="-1"></a>pronostico_arima <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb315-8"><a href="modelos-arima-metodología-box-jenkins.html#cb315-8" tabindex="-1"></a>  <span class="at">Mes =</span> meses,</span>
+<span id="cb315-9"><a href="modelos-arima-metodología-box-jenkins.html#cb315-9" tabindex="-1"></a>  <span class="at">Pronostico =</span> <span class="fu">round</span>(arima_final<span class="sc">$</span>mean, <span class="dv">3</span>),</span>
+<span id="cb315-10"><a href="modelos-arima-metodología-box-jenkins.html#cb315-10" tabindex="-1"></a>  <span class="at">Lo80 =</span> <span class="fu">round</span>(arima_final<span class="sc">$</span>lower[,<span class="dv">1</span>], <span class="dv">3</span>),</span>
+<span id="cb315-11"><a href="modelos-arima-metodología-box-jenkins.html#cb315-11" tabindex="-1"></a>  <span class="at">Hi80 =</span> <span class="fu">round</span>(arima_final<span class="sc">$</span>upper[,<span class="dv">1</span>], <span class="dv">3</span>),</span>
+<span id="cb315-12"><a href="modelos-arima-metodología-box-jenkins.html#cb315-12" tabindex="-1"></a>  <span class="at">Lo95 =</span> <span class="fu">round</span>(arima_final<span class="sc">$</span>lower[,<span class="dv">2</span>], <span class="dv">3</span>),</span>
+<span id="cb315-13"><a href="modelos-arima-metodología-box-jenkins.html#cb315-13" tabindex="-1"></a>  <span class="at">Hi95 =</span> <span class="fu">round</span>(arima_final<span class="sc">$</span>upper[,<span class="dv">2</span>], <span class="dv">3</span>)</span>
+<span id="cb315-14"><a href="modelos-arima-metodología-box-jenkins.html#cb315-14" tabindex="-1"></a>)</span>
+<span id="cb315-15"><a href="modelos-arima-metodología-box-jenkins.html#cb315-15" tabindex="-1"></a></span>
+<span id="cb315-16"><a href="modelos-arima-metodología-box-jenkins.html#cb315-16" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(pronostico_arima,</span>
+<span id="cb315-17"><a href="modelos-arima-metodología-box-jenkins.html#cb315-17" tabindex="-1"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;Mes&quot;</span>, <span class="st">&quot;Pronóstico&quot;</span>, <span class="st">&quot;LI 80%&quot;</span>, <span class="st">&quot;LS 80%&quot;</span>, <span class="st">&quot;LI 95%&quot;</span>, <span class="st">&quot;LS 95%&quot;</span>),</span>
+<span id="cb315-18"><a href="modelos-arima-metodología-box-jenkins.html#cb315-18" tabindex="-1"></a>             <span class="at">caption =</span> <span class="st">&quot;Pronóstico ARIMA del IPC para 2026&quot;</span>)</span></code></pre></div>
+<table>
+<caption><span id="tab:arima-final">Table 4.3: </span>Pronóstico ARIMA del IPC para 2026</caption>
+<thead>
+<tr class="header">
+<th align="left">Mes</th>
+<th align="right">Pronóstico</th>
+<th align="right">LI 80%</th>
+<th align="right">LS 80%</th>
+<th align="right">LI 95%</th>
+<th align="right">LS 95%</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Ene</td>
+<td align="right">1.261</td>
+<td align="right">0.942</td>
+<td align="right">1.579</td>
+<td align="right">0.773</td>
+<td align="right">1.748</td>
+</tr>
+<tr class="even">
+<td align="left">Feb</td>
+<td align="right">1.051</td>
+<td align="right">0.691</td>
+<td align="right">1.411</td>
+<td align="right">0.501</td>
+<td align="right">1.602</td>
+</tr>
+<tr class="odd">
+<td align="left">Mar</td>
+<td align="right">0.662</td>
+<td align="right">0.279</td>
+<td align="right">1.045</td>
+<td align="right">0.077</td>
+<td align="right">1.248</td>
+</tr>
+<tr class="even">
+<td align="left">Abr</td>
+<td align="right">0.431</td>
+<td align="right">0.048</td>
+<td align="right">0.814</td>
+<td align="right">-0.155</td>
+<td align="right">1.017</td>
+</tr>
+<tr class="odd">
+<td align="left">May</td>
+<td align="right">0.308</td>
+<td align="right">-0.075</td>
+<td align="right">0.691</td>
+<td align="right">-0.278</td>
+<td align="right">0.893</td>
+</tr>
+<tr class="even">
+<td align="left">Jun</td>
+<td align="right">0.273</td>
+<td align="right">-0.110</td>
+<td align="right">0.656</td>
+<td align="right">-0.313</td>
+<td align="right">0.859</td>
+</tr>
+<tr class="odd">
+<td align="left">Jul</td>
+<td align="right">0.247</td>
+<td align="right">-0.136</td>
+<td align="right">0.630</td>
+<td align="right">-0.339</td>
+<td align="right">0.833</td>
+</tr>
+<tr class="even">
+<td align="left">Ago</td>
+<td align="right">0.192</td>
+<td align="right">-0.191</td>
+<td align="right">0.575</td>
+<td align="right">-0.394</td>
+<td align="right">0.778</td>
+</tr>
+<tr class="odd">
+<td align="left">Sep</td>
+<td align="right">0.318</td>
+<td align="right">-0.065</td>
+<td align="right">0.701</td>
+<td align="right">-0.268</td>
+<td align="right">0.904</td>
+</tr>
+<tr class="even">
+<td align="left">Oct</td>
+<td align="right">0.207</td>
+<td align="right">-0.176</td>
+<td align="right">0.590</td>
+<td align="right">-0.379</td>
+<td align="right">0.793</td>
+</tr>
+<tr class="odd">
+<td align="left">Nov</td>
+<td align="right">0.215</td>
+<td align="right">-0.168</td>
+<td align="right">0.598</td>
+<td align="right">-0.371</td>
+<td align="right">0.801</td>
+</tr>
+<tr class="even">
+<td align="left">Dic</td>
+<td align="right">0.449</td>
+<td align="right">0.066</td>
+<td align="right">0.832</td>
+<td align="right">-0.137</td>
+<td align="right">1.034</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb316"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb316-1"><a href="modelos-arima-metodología-box-jenkins.html#cb316-1" tabindex="-1"></a><span class="fu">autoplot</span>(arima_final) <span class="sc">+</span></span>
+<span id="cb316-2"><a href="modelos-arima-metodología-box-jenkins.html#cb316-2" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">&quot;Pronóstico ARIMA - IPC Colombia 2026&quot;</span>),</span>
+<span id="cb316-3"><a href="modelos-arima-metodología-box-jenkins.html#cb316-3" tabindex="-1"></a>       <span class="at">subtitle =</span> modelo_final<span class="sc">$</span>method,</span>
+<span id="cb316-4"><a href="modelos-arima-metodología-box-jenkins.html#cb316-4" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Año&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Variación mensual (%)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb316-5"><a href="modelos-arima-metodología-box-jenkins.html#cb316-5" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:arima-final-plot"></span>
+<img src="analisis-ipc-colombia_files/figure-html/arima-final-plot-1.png" alt="Pronóstico ARIMA para 2026 con intervalos de confianza al 80% y 95%." width="960" />
+<p class="caption">
+Figure 4.8: Pronóstico ARIMA para 2026 con intervalos de confianza al 80% y 95%.
+</p>
+</div>
+<div class="sourceCode" id="cb317"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb317-1"><a href="modelos-arima-metodología-box-jenkins.html#cb317-1" tabindex="-1"></a><span class="fu">autoplot</span>(<span class="fu">window</span>(ipc_ts, <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">2022</span>, <span class="dv">1</span>))) <span class="sc">+</span></span>
+<span id="cb317-2"><a href="modelos-arima-metodología-box-jenkins.html#cb317-2" tabindex="-1"></a>  <span class="fu">autolayer</span>(arima_final, <span class="at">series =</span> <span class="st">&quot;Pronóstico ARIMA&quot;</span>) <span class="sc">+</span></span>
+<span id="cb317-3"><a href="modelos-arima-metodología-box-jenkins.html#cb317-3" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Pronóstico ARIMA 2026 en Contexto&quot;</span>,</span>
+<span id="cb317-4"><a href="modelos-arima-metodología-box-jenkins.html#cb317-4" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Año&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Variación mensual (%)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb317-5"><a href="modelos-arima-metodología-box-jenkins.html#cb317-5" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb317-6"><a href="modelos-arima-metodología-box-jenkins.html#cb317-6" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:zoom-arima-final"></span>
+<img src="analisis-ipc-colombia_files/figure-html/zoom-arima-final-1.png" alt="Detalle del pronóstico ARIMA para 2026 en contexto de los últimos 4 años." width="960" />
+<p class="caption">
+Figure 4.9: Detalle del pronóstico ARIMA para 2026 en contexto de los últimos 4 años.
+</p>
+</div>
+</div>
+</div>
+<div id="conclusiones-del-análisis-arima" class="section level2 hasAnchor" number="4.11">
+<h2><span class="header-section-number">4.11</span> Conclusiones del análisis ARIMA<a href="modelos-arima-metodología-box-jenkins.html#conclusiones-del-análisis-arima" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ol style="list-style-type: decimal">
+<li><p><strong>La metodología Box-Jenkins confirma</strong> que la serie del IPC requiere al menos una diferenciación regular para alcanzar estacionariedad, consistente con lo observado en el Capítulo 2 (pruebas ADF y KPSS).</p></li>
+<li><p><strong>El modelo ARIMA seleccionado</strong> por <code>auto.arima()</code> captura tanto la estructura autoregresiva como los componentes de media móvil y estacionalidad de la serie. Los coeficientes significativos validan la especificación.</p></li>
+<li><p><strong>Los residuos del modelo</strong> se comportan de manera aceptable como ruido blanco (prueba de Ljung-Box), lo que indica que el modelo ha capturado la estructura relevante de la serie. La posible no normalidad de los residuos es común en series financieras y macroeconómicas con eventos atípicos.</p></li>
+<li><p><strong>Los puntos de cambio detectados</strong> coinciden con eventos macroeconómicos reales: el choque inflacionario de 2021-2023, la pandemia COVID-19, y la posterior corrección monetaria del Banco de la República.</p></li>
+<li><p><strong>Al comparar con Holt-Winter</strong>, ambos enfoques producen pronósticos competitivos. El modelo ARIMA tiene la ventaja de modelar explícitamente la estructura de autocorrelación, mientras que Holt-Winter es más intuitivo en la interpretación de nivel, tendencia y estacionalidad. La elección entre ambos depende del contexto de aplicación.</p></li>
+</ol>
+</div>
+<div id="referencias-1" class="section level2 hasAnchor" number="4.12">
+<h2><span class="header-section-number">4.12</span> Referencias<a href="modelos-arima-metodología-box-jenkins.html#referencias-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li>Box, G. E. P., Jenkins, G. M., Reinsel, G. C., &amp; Ljung, G. M. (2015). <em>Time Series Analysis: Forecasting and Control</em>, 5th edition. Wiley.</li>
+<li>Hyndman, R.J., &amp; Athanasopoulos, G. (2021). <em>Forecasting: principles and practice</em>, 3rd edition. OTexts. <a href="https://otexts.com/fpp3/">https://otexts.com/fpp3/</a></li>
+<li>Shumway, R. H., &amp; Stoffer, D. S. (2017). <em>Time Series Analysis and Its Applications</em>, 4th edition. Springer.</li>
+<li>DANE. Índice de Precios al Consumidor (IPC). <a href="https://www.dane.gov.co/index.php/estadisticas-por-tema/precios-y-costos/indice-de-precios-al-consumidor-ipc">https://www.dane.gov.co/index.php/estadisticas-por-tema/precios-y-costos/indice-de-precios-al-consumidor-ipc</a></li>
+</ul>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="suavizamiento-exponencial-y-método-de-holt-winter.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["analisis-ipc-colombia.pdf"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
