@@ -1,7 +1,8 @@
 book_filename: "analisis-ipc-colombia"
 output_dir: "docs"
 delete_merged_file: true
-rmd_files: ["index.Rmd", "01-exploracion.Rmd", "02-descomposicion.Rmd", "03-holt-winter.Rmd", "04-arima.Rmd"]
+rmd_files: ["index.Rmd", "01-exploracion.Rmd", "02-descomposicion.Rmd",
+             "03-holt-winter.Rmd", "04-arima.Rmd", "05-prophet-regresion.Rmd"]
 language:
   ui:
     chapter_name: "Capítulo "
