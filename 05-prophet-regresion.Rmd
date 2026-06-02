@@ -1,0 +1,195 @@
+# Prophet y Regresión en Series de Tiempo
+
+En este capítulo se incorporan dos enfoques complementarios a los modelos previamente ajustados (Holt-Winters y ARIMA) para el Índice de Precios al Consumidor (IPC) de Colombia: el algoritmo **Facebook Prophet** y el análisis de la serie como un **modelo de regresión con errores ARIMA**.
+
+## Configuración del entorno
+
+```{r setup-prophet, message=FALSE, warning=FALSE}
+library(fpp3)
+library(fable.prophet)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+```
+
+## Carga y preparación de datos
+
+```{r datos-ipc, message=FALSE, warning=FALSE}
+# Cargar datos del IPC Colombia (misma fuente que capítulos anteriores)
+# Banco de la República - https://www.banrep.gov.co/es/estadisticas-economicas/series-historicas/precios-inflacion
+ipc_raw <- read.csv("datos/ipc_colombia.csv")
+
+ipc_ts <- ipc_raw |>
+  mutate(Fecha = yearmonth(Fecha)) |>
+  as_tsibble(index = Fecha)
+```
+
+## Algoritmo Prophet
+
+### ¿Qué es Prophet?
+
+Prophet es un modelo de pronóstico de series de tiempo desarrollado por Facebook (Taylor & Letham, 2018). Se formula como un modelo de regresión no lineal de la forma:
+
+$$y_t = g(t) + s(t) + h(t) + \epsilon_t$$
+
+donde:
+
+- $g(t)$ representa la **tendencia** (lineal por tramos o logística)
+- $s(t)$ captura los **componentes estacionales** mediante términos de Fourier
+- $h(t)$ modela los **efectos de días festivos o eventos especiales**
+- $\epsilon_t$ es el término de error (ruido blanco)
+
+Prophet es especialmente útil cuando la serie presenta estacionalidad fuerte y múltiples temporadas de datos históricos, características que cumple el IPC de Colombia al tener ciclos estacionales anuales claros relacionados con factores como el calendario escolar, tarifas de servicios públicos y épocas de mayor consumo.
+
+### Partición entrenamiento / prueba
+
+```{r particion}
+# Usar los últimos 12 meses como conjunto de prueba
+ipc_train <- ipc_ts |> filter(Fecha <= yearmonth("2023 Dec"))
+ipc_test  <- ipc_ts |> filter(Fecha >  yearmonth("2023 Dec"))
+```
+
+### Ajuste del modelo Prophet
+
+```{r prophet-fit, message=FALSE, warning=FALSE}
+fit_prophet <- ipc_train |>
+  model(prophet = prophet(IPC))
+
+report(fit_prophet)
+```
+
+### Componentes del modelo
+
+```{r prophet-componentes, fig.cap="Componentes del modelo Prophet: tendencia y estacionalidad del IPC Colombia"}
+components(fit_prophet) |> autoplot() +
+  labs(title = "Descomposición Prophet - IPC Colombia",
+       x = "Fecha")
+```
+
+### Pronóstico con Prophet
+
+```{r prophet-forecast, fig.cap="Pronóstico a 12 meses con el modelo Prophet"}
+fc_prophet <- fit_prophet |>
+  forecast(h = 12)
+
+fc_prophet |>
+  autoplot(ipc_ts) +
+  labs(title = "Pronóstico IPC Colombia - Modelo Prophet",
+       y = "IPC", x = "Fecha")
+```
+
+## Comparación de modelos: ARIMA, ETS y Prophet
+
+Se comparan los tres enfoques ajustados sobre el mismo conjunto de entrenamiento, evaluando su desempeño sobre el conjunto de prueba.
+
+```{r comparacion-modelos, message=FALSE, warning=FALSE}
+fit_todos <- ipc_train |>
+  model(
+    arima   = ARIMA(IPC),
+    ets     = ETS(IPC),
+    prophet = prophet(IPC)
+  )
+
+fc_todos <- fit_todos |>
+  forecast(h = nrow(ipc_test))
+```
+
+### Visualización comparativa
+
+```{r plot-comparacion, fig.cap="Comparación de pronósticos: ARIMA, ETS y Prophet para el IPC de Colombia"}
+fc_todos |>
+  autoplot(ipc_ts, level = NULL) +
+  labs(title = "Comparación de modelos - IPC Colombia",
+       y = "IPC", x = "Fecha",
+       color = "Modelo")
+```
+
+### Métricas de error
+
+```{r metricas}
+accuracy(fc_todos, ipc_ts) |>
+  select(.model, RMSE, MAE, MAPE, MASE) |>
+  arrange(RMSE)
+```
+
+La tabla de métricas permite identificar el modelo con mejor ajuste predictivo sobre el período de prueba. Un RMSE y MAPE menores indican mayor precisión. Para datos del IPC (que típicamente tienen tendencia suave y estacionalidad moderada), ARIMA suele ser competitivo frente a Prophet, aunque este último puede capturar mejor cambios estructurales o puntos de inflexión repentinos.
+
+## Regresión con errores ARIMA
+
+### Fundamento teórico
+
+La regresión en series de tiempo combina el poder explicativo de variables externas con la estructura temporal de los errores. Cuando la variable dependiente y los regresores son estacionarios, el modelo puede expresarse como:
+
+$$y_t = \beta_0 + \beta_1 x_t + \eta_t$$
+
+donde $\eta_t$ sigue un proceso ARMA. Si alguna variable no es estacionaria, se diferencia primero y el modelo resultante se denomina **modelo en diferencias con errores ARMA**, equivalente a un modelo de regresión con errores ARIMA.
+
+### ¿Es viable aplicarlo al IPC?
+
+El IPC de Colombia presenta tendencia creciente, lo que implica no estacionariedad en nivel. Sin embargo, la **variación porcentual mensual del IPC** (inflación mensual) sí es aproximadamente estacionaria, lo que habilita el enfoque de regresión. Se explorará si variables macroeconómicas disponibles permiten explicar los movimientos del IPC.
+
+### Construcción de la variable objetivo estacionaria
+
+```{r ipc-diferenciado, fig.cap="Variación porcentual mensual del IPC Colombia"}
+ipc_var <- ipc_ts |>
+  mutate(var_ipc = difference(IPC) / lag(IPC) * 100)
+
+ipc_var |>
+  autoplot(var_ipc) +
+  labs(title = "Variación mensual del IPC Colombia (%)",
+       y = "Var. % mensual", x = "Fecha")
+```
+
+### Modelo de regresión con errores ARIMA
+
+Dado que en este ejercicio se trabaja únicamente con la serie del IPC (sin regresor externo adicional disponible), se ajusta el modelo `ARIMA(IPC ~ trend())` para capturar el efecto de la tendencia lineal como regresor, lo que ilustra el enfoque de regresión con errores ARIMA:
+
+```{r regresion-arima, message=FALSE, warning=FALSE}
+fit_reg <- ipc_train |>
+  model(reg_arima = ARIMA(IPC ~ trend()))
+
+report(fit_reg)
+```
+
+### Evaluación de residuos
+
+```{r residuos-regresion, fig.cap="Diagnóstico de residuos del modelo de regresión con errores ARIMA"}
+fit_reg |> gg_tsresiduals() +
+  labs(title = "Residuos - Regresión con errores ARIMA")
+```
+
+```{r ljung-box-reg}
+augment(fit_reg) |>
+  features(.innov, ljung_box, dof = 3, lag = 12)
+```
+
+Si el p-valor del test de Ljung-Box es mayor a 0.05, los residuos se comportan como ruido blanco, validando el modelo.
+
+### Pronóstico del modelo de regresión
+
+```{r forecast-regresion, fig.cap="Pronóstico a 12 meses con regresión con errores ARIMA"}
+fc_reg <- fit_reg |>
+  forecast(new_data = new_data(ipc_train, 12) |>
+             mutate(trend = max(ipc_train$Fecha) + 1:12))
+
+fc_reg |>
+  autoplot(ipc_ts) +
+  labs(title = "Pronóstico IPC Colombia - Regresión con errores ARIMA",
+       y = "IPC", x = "Fecha")
+```
+
+## Conclusiones del capítulo
+
+En este capítulo se amplió el análisis del IPC de Colombia incorporando dos enfoques adicionales:
+
+1. **Prophet** demostró su capacidad para descomponer automáticamente la serie en tendencia y estacionalidad mediante un enfoque bayesiano. Su desempeño es comparable al ARIMA para datos mensuales, siendo su ventaja más clara en series con cambios estructurales abruptos o efectos de calendario.
+
+2. **La regresión con errores ARIMA** valida el comportamiento del IPC como un proceso lineal con errores autocorrelacionados. La tendencia capturada por el componente de regresión y la estructura ARIMA de los errores ofrecen una interpretación económicamente intuitiva: el IPC crece de forma tendencial pero sus desviaciones exhiben memoria temporal.
+
+3. La comparación de los tres modelos (ARIMA, ETS y Prophet) mediante métricas de error sobre el conjunto de prueba permite concluir cuál es el más adecuado para este escenario particular, información valiosa para la toma de decisiones de política económica o planificación empresarial.
+
+## Referencias
+
+- Taylor, S. J., & Letham, B. (2018). Forecasting at scale. *The American Statistician*, 72(1), 37-45.
+- Hyndman, R. J., & Athanasopoulos, G. (2021). *Forecasting: Principles and Practice* (3rd ed.). OTexts. https://otexts.com/fpp3/
+- Banco de la República de Colombia. Series históricas de precios e inflación. https://www.banrep.gov.co/es/estadisticas-economicas/series-historicas/precios-inflacion
