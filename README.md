@@ -21,4 +21,5 @@ Variación mensual del IPC total nacional de Colombia (enero 2010 – diciembre 
 
 ## Autor
 
-Maestría en Ciencia de Datos - Universidad Javeriana Cali
+Juan Sebastian Torres Romero
+Maestría en Ciencia de Datos - Universidad Javeriana
